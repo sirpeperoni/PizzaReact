@@ -1,5 +1,5 @@
 import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
-import { db } from "../firebase"; // путь к вашему файлу с конфигурацией firebase
+import { db } from "../firebase";
 import type { GoodItemInterface } from "../Widgets/GoodsList/GoodsList";
 import type { CartItem } from "../store/cartSlice";
 

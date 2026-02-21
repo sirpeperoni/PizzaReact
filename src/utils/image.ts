@@ -1,7 +1,7 @@
 interface imageInterface {
-    r: number,
-    x: number,
-    id: string
+    r?: number,
+    x?: number,
+    id?: string
 }
 
 
