@@ -6,7 +6,7 @@ admin.initializeApp({
   databaseURL: "https://pizza-d94f0.firebaseio.com/"
 });
 
-const uid = "QPfHIUaILTVQuLDkGtVNRcT5NaD2"; 
+const uid = "4uED3bVjLwTAizhTgh7nnS4spIW2"; 
 
 admin.auth().setCustomUserClaims(uid, { role: "admin" })
 .then(() => {
