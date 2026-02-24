@@ -1,4 +1,3 @@
-import {RouterProvider } from '@tanstack/react-router'
 import './App.css'
 
 import { Typography } from '@mui/material';
