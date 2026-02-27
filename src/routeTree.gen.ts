@@ -9,68 +9,209 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './app/routes/__root'
-import { Route as RegisterRouteImport } from './app/routes/register'
-import { Route as LoginRouteImport } from './app/routes/login'
+import { Route as NotauthenticatedRouteRouteImport } from './app/routes/_notauthenticated/route'
+import { Route as AuthenticatedRouteRouteImport } from './app/routes/_authenticated/route'
+import { Route as IndexRouteImport } from './app/routes/index'
+import { Route as NotauthenticatedRegisterRouteImport } from './app/routes/_notauthenticated/register'
+import { Route as NotauthenticatedLoginRouteImport } from './app/routes/_notauthenticated/login'
+import { Route as AuthenticatedHomeRouteImport } from './app/routes/_authenticated/home'
+import { Route as AuthenticatedAdminRouteRouteImport } from './app/routes/_authenticated/_admin/route'
+import { Route as AuthenticatedAdminAdminRouteImport } from './app/routes/_authenticated/_admin/admin'
 
-const RegisterRoute = RegisterRouteImport.update({
-  id: '/register',
-  path: '/register',
+const NotauthenticatedRouteRoute = NotauthenticatedRouteRouteImport.update({
+  id: '/_notauthenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
-const LoginRoute = LoginRouteImport.update({
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NotauthenticatedRegisterRoute =
+  NotauthenticatedRegisterRouteImport.update({
+    id: '/register',
+    path: '/register',
+    getParentRoute: () => NotauthenticatedRouteRoute,
+  } as any)
+const NotauthenticatedLoginRoute = NotauthenticatedLoginRouteImport.update({
   id: '/login',
   path: '/login',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => NotauthenticatedRouteRoute,
+} as any)
+const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
+  id: '/_admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAdminAdminRoute = AuthenticatedAdminAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedAdminRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/login': typeof LoginRoute
-  '/register': typeof RegisterRoute
+  '/': typeof IndexRoute
+  '/home': typeof AuthenticatedHomeRoute
+  '/login': typeof NotauthenticatedLoginRoute
+  '/register': typeof NotauthenticatedRegisterRoute
+  '/admin': typeof AuthenticatedAdminAdminRoute
 }
 export interface FileRoutesByTo {
-  '/login': typeof LoginRoute
-  '/register': typeof RegisterRoute
+  '/': typeof IndexRoute
+  '/home': typeof AuthenticatedHomeRoute
+  '/login': typeof NotauthenticatedLoginRoute
+  '/register': typeof NotauthenticatedRegisterRoute
+  '/admin': typeof AuthenticatedAdminAdminRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/login': typeof LoginRoute
-  '/register': typeof RegisterRoute
+  '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/_notauthenticated': typeof NotauthenticatedRouteRouteWithChildren
+  '/_authenticated/_admin': typeof AuthenticatedAdminRouteRouteWithChildren
+  '/_authenticated/home': typeof AuthenticatedHomeRoute
+  '/_notauthenticated/login': typeof NotauthenticatedLoginRoute
+  '/_notauthenticated/register': typeof NotauthenticatedRegisterRoute
+  '/_authenticated/_admin/admin': typeof AuthenticatedAdminAdminRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/login' | '/register'
+  fullPaths: '/' | '/home' | '/login' | '/register' | '/admin'
   fileRoutesByTo: FileRoutesByTo
-  to: '/login' | '/register'
-  id: '__root__' | '/login' | '/register'
+  to: '/' | '/home' | '/login' | '/register' | '/admin'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/_notauthenticated'
+    | '/_authenticated/_admin'
+    | '/_authenticated/home'
+    | '/_notauthenticated/login'
+    | '/_notauthenticated/register'
+    | '/_authenticated/_admin/admin'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  LoginRoute: typeof LoginRoute
-  RegisterRoute: typeof RegisterRoute
+  IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  NotauthenticatedRouteRoute: typeof NotauthenticatedRouteRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/register': {
-      id: '/register'
-      path: '/register'
-      fullPath: '/register'
-      preLoaderRoute: typeof RegisterRouteImport
+    '/_notauthenticated': {
+      id: '/_notauthenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof NotauthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/login': {
-      id: '/login'
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_notauthenticated/register': {
+      id: '/_notauthenticated/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof NotauthenticatedRegisterRouteImport
+      parentRoute: typeof NotauthenticatedRouteRoute
+    }
+    '/_notauthenticated/login': {
+      id: '/_notauthenticated/login'
       path: '/login'
       fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof NotauthenticatedLoginRouteImport
+      parentRoute: typeof NotauthenticatedRouteRoute
+    }
+    '/_authenticated/home': {
+      id: '/_authenticated/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof AuthenticatedHomeRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/_admin': {
+      id: '/_authenticated/_admin'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedAdminRouteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/_admin/admin': {
+      id: '/_authenticated/_admin/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminAdminRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
     }
   }
 }
 
+interface AuthenticatedAdminRouteRouteChildren {
+  AuthenticatedAdminAdminRoute: typeof AuthenticatedAdminAdminRoute
+}
+
+const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
+  {
+    AuthenticatedAdminAdminRoute: AuthenticatedAdminAdminRoute,
+  }
+
+const AuthenticatedAdminRouteRouteWithChildren =
+  AuthenticatedAdminRouteRoute._addFileChildren(
+    AuthenticatedAdminRouteRouteChildren,
+  )
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
+  AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRouteWithChildren,
+  AuthenticatedHomeRoute: AuthenticatedHomeRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
+interface NotauthenticatedRouteRouteChildren {
+  NotauthenticatedLoginRoute: typeof NotauthenticatedLoginRoute
+  NotauthenticatedRegisterRoute: typeof NotauthenticatedRegisterRoute
+}
+
+const NotauthenticatedRouteRouteChildren: NotauthenticatedRouteRouteChildren = {
+  NotauthenticatedLoginRoute: NotauthenticatedLoginRoute,
+  NotauthenticatedRegisterRoute: NotauthenticatedRegisterRoute,
+}
+
+const NotauthenticatedRouteRouteWithChildren =
+  NotauthenticatedRouteRoute._addFileChildren(
+    NotauthenticatedRouteRouteChildren,
+  )
+
 const rootRouteChildren: RootRouteChildren = {
-  LoginRoute: LoginRoute,
-  RegisterRoute: RegisterRoute,
+  IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  NotauthenticatedRouteRoute: NotauthenticatedRouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

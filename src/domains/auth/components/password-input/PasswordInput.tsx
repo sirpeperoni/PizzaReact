@@ -1,16 +1,17 @@
-import { FormControl, FormHelperText, IconButton, InputAdornment, OutlinedInput, TextField } from '@mui/material';
+import { FormControl, FormHelperText, IconButton, InputAdornment, OutlinedInput } from '@mui/material';
 import { type FieldError, type UseFormRegister } from 'react-hook-form';
-import type { LoginCredentials, RegisterData } from '../../types';
+import type { RegisterData } from '../../types';
 import { useState } from 'react';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 interface PasswordFieldProps {
     register: UseFormRegister<RegisterData>;
     error?: FieldError;
+    placeholder?: string,
     id?: string
 }
 
-export const PasswordInput = ({ register, error, id }: PasswordFieldProps) => {
+export const PasswordInput = ({ register, error, id, placeholder }: PasswordFieldProps) => {
     const [showPassword, setShowPassword] = useState(false);
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -50,6 +51,7 @@ export const PasswordInput = ({ register, error, id }: PasswordFieldProps) => {
                 }
                 autoComplete="current-password"
                 error={!!error}
+                placeholder={placeholder}
                 {...register('password', {
                     required: 'Пароль обязателен',
                     minLength: {

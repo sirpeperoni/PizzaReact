@@ -21,11 +21,12 @@ class AuthService {
         try {
             const userCredentials = await createUserWithEmailAndPassword(auth, email, password);
             const firebaseUser = userCredentials.user
+            
             const user: UserData = {
                 uid: firebaseUser.uid,
                 email: firebaseUser.email,
                 username: username || firebaseUser.email?.split('@')[0] || 'User',
-                role
+                role: role || 'User'
             }
             await setDoc(doc(db, 'users', firebaseUser.uid), user);
             return user

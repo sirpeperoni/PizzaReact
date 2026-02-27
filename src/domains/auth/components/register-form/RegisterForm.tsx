@@ -2,15 +2,15 @@ import { useForm, type SubmitHandler} from "react-hook-form";
 import type { LoginCredentials, RegisterData } from "../../types";
 import { useAuthStore } from "../../stores/authStore";
 import { PasswordInput } from "../password-input/PasswordInput";
-import { EmailInput } from "../email-input/EmailInput";
+import { Input } from "../input/Input";
 import { SubmitButton } from "../submit-button/SubmitButton";
-import { Box, Button } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import styles from './RegisterForn.module.css'
 import { Link } from "@tanstack/react-router";
 
 export const RegisterForm = () => {
-    const registerProfile = useAuthStore((state) => state.registerProfile)
     const isLoading = useAuthStore((state) => state.isLoading)
+    const registerProfile = useAuthStore((state) => state.registerProfile)
     
     const {
         register,
@@ -21,6 +21,7 @@ export const RegisterForm = () => {
         defaultValues: {
             email: '',
             password: '',
+            username: ''
         },
     });
 
@@ -34,20 +35,45 @@ export const RegisterForm = () => {
 
     return (
         <Box component="form" className={styles.form} onSubmit={handleSubmit(onSubmit)}>
-            <EmailInput
-                register={register}
+
+            <Input
+                register={register('email', {
+                    required: 'Email обязателен',
+                    pattern: {
+                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                        message: 'Некорректный email адрес'
+                    }
+                })}
+                placeholder="Email"
+                type="email"
+                id={"email"}
                 error={errors.email}
+            />
+
+            <Input
+                register={register('username', {
+                    required: 'Логин обязателен',
+                    minLength: {
+                        value: 6,
+                        message: 'Логин должен содержать минимум 6 символов',
+                    }
+                })}
+                placeholder="Логин"
+                id={"username"}
+                error={errors.username}
             />
             
             <PasswordInput
                 register={register}
                 error={errors.password}
+                placeholder="Пароль"
                 id={"password"}
             />
 
             <PasswordInput
                 register={register}
                 error={errors.password}
+                placeholder="Повторите пароль"
                 id={"repeat-password"}
             />
 

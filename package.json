@@ -15,6 +15,7 @@
     "@mui/icons-material": "^7.3.7",
     "@mui/material": "^7.3.7",
     "@tanstack/react-router": "^1.159.10",
+    "@tanstack/router-devtools": "^1.163.2",
     "firebase": "^12.9.0",
     "firebase-admin": "^13.6.1",
     "react": "^19.2.0",

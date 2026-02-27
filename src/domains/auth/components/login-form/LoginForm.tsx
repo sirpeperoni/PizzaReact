@@ -2,7 +2,7 @@ import { useForm, type SubmitHandler} from "react-hook-form";
 import type { LoginCredentials, RegisterData } from "../../types";
 import { useAuthStore } from "../../stores/authStore";
 import { PasswordInput } from "../password-input/PasswordInput";
-import { EmailInput } from "../email-input/EmailInput";
+import { Input } from "../input/Input";
 import { SubmitButton } from "../submit-button/SubmitButton";
 import { Box, Button } from "@mui/material";
 import styles from './LoginForn.module.css'
@@ -34,14 +34,25 @@ export const LoginForm = () => {
 
     return (
         <Box component="form" className={styles.form} onSubmit={handleSubmit(onSubmit)}>
-            <EmailInput
-                register={register}
+            <Input
+                register={register('email', {
+                    required: 'Email обязателен',
+                    pattern: {
+                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                        message: 'Некорректный email адрес'
+                    }
+                })}
+                placeholder="Email"
+                type="email"
+                id={"email"}
                 error={errors.email}
             />
             
             <PasswordInput
                 register={register}
                 error={errors.password}
+                placeholder="Пароль"
+                id={"password"}
             />
 
             <div className={styles.text__buttons}>
