@@ -5,11 +5,11 @@ import { cartService } from "../services/cartService";
 import { useAuthStore } from "../../auth/stores/authStore";
 
 interface CartStore extends CartState {
-    addToCart: (item: CartItem, uid: string | undefined) => Promise<void>,
+    addToCart: (item: CartItem) => Promise<void>,
     removeFromCart: (id: string, settings?: { size?: string; dough?: string }) => Promise<void>,
     updateQuantity: (update: UpdateQuantityPayload) => Promise<void>,
     clearCart: (uid: string) => Promise<void>,
-    loadUserCart: (uid: string) => Promise<void>
+    loadUserCart: () => Promise<void>
 }
 
 const initialState: CartState = {
@@ -21,147 +21,55 @@ const initialState: CartState = {
     settings: {}
 };
 
+const calculateTotals = (items: CartItem[]) => {
+    const totalQuantity = items.reduce(
+        (total, item) => total + (item.quantity || 0),
+        0
+    );
+    const totalAmount = items.reduce(
+        (total, item) => total + (item.price * (item.quantity || 1)),
+        0
+    );
+    return { totalQuantity, totalAmount };
+};
+
+const findItemIndex = (items: CartItem[], id: string, settings?: { size?: string; dough?: string }) => {
+    return items.findIndex(item =>
+        item.id === id &&
+        item.settings?.size === settings?.size &&
+        item.settings?.dough === settings?.dough
+    );
+};
+
 export const useCartStore = create<CartStore>()(
     persist(
         devtools(
             combine(initialState, (set, get) => {
-                const calculateTotals = (items: CartItem[]) => {
-                    const totalQuantity = items.reduce(
-                        (total, item) => total + (item.quantity || 0),
-                        0
-                    );
-                    const totalAmount = items.reduce(
-                        (total, item) => total + (item.price * (item.quantity || 1)),
-                        0
-                    );
-                    return { totalQuantity, totalAmount };
-                };
+                const loadUserCart = async () => {
+                    try {
+                        set({ isLoading: true, error: null });
+                        const cartItems = await cartService.getUserCart();
+                        const totals = calculateTotals(cartItems);
+                        set({
+                            items: cartItems,
+                            ...totals,
+                            isLoading: false
+                        });
+                    } catch (error) {
+                        set({
+                            error: error instanceof Error ? error.message : 'Failed to load cart',
+                            isLoading: false
+                        });
+                    }
+                }
 
-                const findItemIndex = (items: CartItem[], id: string, settings?: { size?: string; dough?: string }) => {
-                    return items.findIndex(item => 
-                        item.id === id && 
-                        item.settings?.size === settings?.size && 
-                        item.settings?.dough === settings?.dough
-                    );
-                };
                 return {
-                    loadUserCart: async (uid) => {
-                        if (!uid) return;
-                        
-                        set({ isLoading: true, error: null });
-                        try {
-                            const cartItems = await cartService.getUserCart(uid);
-                            console.log(cartItems)
-                            const totals = calculateTotals(cartItems);
-                            set({ 
-                                items: cartItems,
-                                ...totals,
-                                isLoading: false 
-                            });
-                        } catch (error) {
-                            set({ 
-                                error: error instanceof Error ? error.message : 'Failed to load cart',
-                                isLoading: false 
-                            });
-                        }
-                    },
-                    addToCart: async (newItem, uid) => {
-                        if (!uid) return;
-                    
-                        set({ isLoading: true, error: null });
-
-                        const currentState = get();
-                        const originalItems = [...currentState.items];
-                        const quantity = newItem.quantity || 1;
-
-                        const existingItemIndex = findItemIndex(originalItems, newItem.id, newItem.settings);
-
-                        let optimisticItems: CartItem[] = [];
-                        let isUpdate = false;
-                    
-                        try {
-                            if (existingItemIndex !== -1) {
-                                const existingItem = originalItems[existingItemIndex];
-                                if (!existingItem) {
-                                    throw new Error('Existing item not found');
-                                }
-                                
-                                const newQuantity = existingItem.quantity + quantity;
-                                
-                                optimisticItems = originalItems.map((item, index) => {
-                                    if (index === existingItemIndex) {
-                                        return {
-                                            ...item,
-                                            quantity: newQuantity,
-                                            totalPrice: item.price * newQuantity,
-                                        };
-                                    }
-                                    return item;
-                                });
-                                isUpdate = true;
-                            } else {
-                                const newCartItem: CartItem = {
-                                    ...newItem,
-                                    quantity,
-                                    totalPrice: newItem.price * quantity,
-                                };
-                                optimisticItems = [...originalItems, newCartItem];
-                                isUpdate = false;
-                            }
-
-                            const optimisticTotals = calculateTotals(optimisticItems);
-
-                            set({ 
-                                items: optimisticItems,
-                                ...optimisticTotals,
-                                isLoading: true, 
-                                error: null 
-                            });
-
-                            if (isUpdate) {
-                                const existingItem = originalItems[existingItemIndex];
-                                const newQuantity = existingItem.quantity + quantity;
-                                
-                                if (existingItem.id) {
-                                    await cartService.updateCartItemQuantity(existingItem.id, uid, newQuantity);
-                                }
-
-                                set({ isLoading: false });
-                            } else {
-                                const newCartItem: CartItem = {
-                                    ...newItem,
-                                    quantity,
-                                    totalPrice: newItem.price * quantity,
-                                };
-
-                                const addedItem = await cartService.addToCart(newCartItem, uid);
-
-                                const finalItems = optimisticItems.map(item => {
-                                    if (!item.id && 
-                                        item.id === newItem.id && 
-                                        JSON.stringify(item.settings) === JSON.stringify(newItem.settings)) {
-                                        return addedItem;
-                                    }
-                                    return item;
-                                });
-                                
-                                const finalTotals = calculateTotals(finalItems as CartItem[]);
-                                
-                                set({ 
-                                    items: finalItems as CartItem[],
-                                    ...finalTotals,
-                                    isLoading: false 
-                                });
-                            }
-                        } catch (error) {
-                            console.error('Error in addToCart:', error);
-                            set({ 
-                                items: originalItems,
-                                ...calculateTotals(originalItems),
-                                error: error instanceof Error ? error.message : 'Failed to add item to cart',
-                                isLoading: false 
-                            });
-                        }
+                    loadUserCart,
+                    addToCart: async (newItem) => {
+                        set({ isLoading: true });
+                        await cartService.addToCart(newItem);
+                        set({ isLoading: false});
+                        void loadUserCart();
                     },
 
                     removeFromCart: async (id, settings) => {

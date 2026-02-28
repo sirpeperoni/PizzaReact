@@ -6,6 +6,7 @@ export interface CartItem {
     totalPrice: number;
     image?: string;
     settings?: Pizza;
+    pizzaId?: string;
 }
 
 export interface CartState {
