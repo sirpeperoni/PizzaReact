@@ -5,7 +5,6 @@ import type { LoginCredentials, UserData, RegisterData } from "../types";
 import { doc, setDoc } from "firebase/firestore";
 
 class AuthService {
-
     async login({ email, password }: LoginCredentials): Promise<UserData | null> {
         try {
             const userCredentials = await signInWithEmailAndPassword(auth, email, password)

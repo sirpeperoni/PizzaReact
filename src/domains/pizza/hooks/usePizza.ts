@@ -2,7 +2,6 @@ import { useState, useCallback } from "react";
 import type { CartItem, GoodItemInterface } from "../types/pizza.types";
 import { pizzaService } from "../services/pizzaService";
 
-
 export const usePizza = () => {
     const [goods, setGoods] = useState<GoodItemInterface[]>([]);
     const [loading, setLoading] = useState<boolean>(false);

@@ -6,12 +6,14 @@ import { Input } from "../input/Input";
 import { SubmitButton } from "../submit-button/SubmitButton";
 import { Box, Button } from "@mui/material";
 import styles from './LoginForn.module.css'
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 
 export const LoginForm = () => {
     const login = useAuthStore((state) => state.login)
     const isLoading = useAuthStore((state) => state.isLoading)
-    
+    const errror= useAuthStore((state) => state.error)
+    const navigate = useNavigate();
+
     const {
         register,
         handleSubmit,
@@ -26,7 +28,10 @@ export const LoginForm = () => {
 
     const onSubmit: SubmitHandler<RegisterData> = async (data) => {
         try {
-            login(data)
+            await login(data);
+            void navigate({
+                to: '/home'
+            })
         } catch (error) {
             console.error('Ошибка входа:', error);
         }
@@ -71,7 +76,7 @@ export const LoginForm = () => {
                     <Link to={"/register"}>Нет аккаута?</Link>
                 </Button>
             </div>
-
+            {errror && <span>{errror}</span>}
             <SubmitButton
                 isSubmitting={isSubmitting}
                 isLoading={isLoading}
