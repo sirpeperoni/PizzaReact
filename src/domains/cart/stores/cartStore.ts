@@ -67,9 +67,9 @@ export const useCartStore = create<CartStore>()(
                     },
                     addToCart: async (newItem, uid) => {
                         if (!uid) return;
-                    
+                        
                         set({ isLoading: true, error: null });
-
+                        
                         const currentState = get();
                         const originalItems = [...currentState.items];
                         const quantity = newItem.quantity || 1;

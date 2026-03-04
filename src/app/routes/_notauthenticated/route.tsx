@@ -10,7 +10,7 @@ export const Route = createFileRoute('/_notauthenticated')({
         })
       }
     },
-  component: RouteComponent,
+    component: RouteComponent,
 })
 
 function RouteComponent() {
