@@ -95,7 +95,7 @@ export const ModalGood = ({id, open, handleClose, img, title, content, priceArr,
                 size: size,
                 dough: data.dough
             }
-        } as CartItem, uid);
+        } as CartItem);
     }, [id, title, currentPrice, img, handleClose, addToCart, uid]);
 
     const sizeButtons = useMemo(() => (

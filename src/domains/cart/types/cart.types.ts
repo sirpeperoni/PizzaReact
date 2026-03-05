@@ -24,7 +24,7 @@ export interface Pizza {
 }
 
 export interface UpdateQuantityPayload {
-    id: string | number;
+    id: string;
     quantity: number;
     settings: Pizza 
 }

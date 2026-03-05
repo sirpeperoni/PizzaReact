@@ -7,7 +7,7 @@ import { useAuthStore } from "../../../domains/auth/stores/authStore";
 import { useEffect } from "react";
 import type { Pizza } from "../../../domains/cart/types/cart.types";
 import { Add,  Remove } from "@mui/icons-material";
-import { usePizza } from "../../../domains/pizza/hooks/usePizza";
+import {  usePizzaStore } from "../../../domains/pizza/stores/usePizzaStore";
 
 
 interface CartDrawerProps {
@@ -24,7 +24,7 @@ export const CartDrawer = ({ open, onClose }: CartDrawerProps) => {
     const error = useCartStore((state) => state.error);
     const user = useAuthStore((state) => state.user);
     const itmes = useCartStore((state) => state.items)
-    const pizza = usePizza()
+    const pizza = usePizzaStore()
     
     const removeFromCart = useCartStore((state) => state.removeFromCart);
     const updateQuantity = useCartStore((state) => state.updateQuantity);
@@ -34,8 +34,8 @@ export const CartDrawer = ({ open, onClose }: CartDrawerProps) => {
     const onPlaceAnOrder = async () => {
         try {
             if(user?.uid){
-                await pizza.placeAnOrder(user.uid, itmes, totalAmount)
-                clearCart(user.uid)
+                await pizza.placeAnOrder(itmes, totalAmount)
+                clearCart()
             }
         } catch (error) {
             
@@ -45,7 +45,7 @@ export const CartDrawer = ({ open, onClose }: CartDrawerProps) => {
     const handleClearCart = () => {
         try {
             if(user?.uid){
-                clearCart(user?.uid)
+                clearCart()
             }
         } catch (error) {
             
@@ -67,7 +67,7 @@ export const CartDrawer = ({ open, onClose }: CartDrawerProps) => {
 
     useEffect(() => {
         if (open && user?.uid) {
-            loadUserCart(user.uid);
+            loadUserCart();
         }
     }, [open, user?.uid, loadUserCart]);
     
@@ -76,7 +76,7 @@ export const CartDrawer = ({ open, onClose }: CartDrawerProps) => {
         if (!user?.uid) return;
         
         try {
-            await loadUserCart(user.uid);
+            await loadUserCart();
         } catch (error) {
 
         }

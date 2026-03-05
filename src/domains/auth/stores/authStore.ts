@@ -10,6 +10,7 @@ import { authService } from "../services/authService";
 import { firestoreService } from "../../../shared/services/firestoreService";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../../shared/firebase";
+import { cartService } from "../../cart/services/cartService";
 
 interface AuthStore extends AuthState {
   login: (credentials: LoginCredentials) => Promise<void>;

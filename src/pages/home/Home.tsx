@@ -19,7 +19,6 @@ const goodLists = [
 export const Home = () => {
     return (
         <div className="">
-          <Header/>
           <Container maxWidth="xl" >
             {
               goodLists.map((good) => 

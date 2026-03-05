@@ -2,13 +2,12 @@ import { create } from "zustand";
 import type { CartItem, CartState, Pizza, UpdateQuantityPayload } from "../types/cart.types";
 import { combine, devtools, persist } from "zustand/middleware";
 import { cartService } from "../services/cartService";
-import { useAuthStore } from "../../auth/stores/authStore";
 
 interface CartStore extends CartState {
     addToCart: (item: CartItem) => Promise<void>,
     removeFromCart: (id: string, settings?: { size?: string; dough?: string }) => Promise<void>,
     updateQuantity: (update: UpdateQuantityPayload) => Promise<void>,
-    clearCart: (uid: string) => Promise<void>,
+    clearCart: () => Promise<void>,
     loadUserCart: () => Promise<void>
 }
 
@@ -71,7 +70,7 @@ export const useCartStore = create<CartStore>()(
 
                     removeFromCart: async (id, settings) => {
                         const { items } = get();
-                        const uid = useAuthStore.getState().user?.uid;
+                        const uid = cartService.userId;
                         
                         if (!uid) return;   
                         set({ isLoading: true, error: null });
@@ -95,7 +94,7 @@ export const useCartStore = create<CartStore>()(
                     updateQuantity: async (update) => {
                         const { id, quantity, settings } = update;
                         const { items } = get();
-                        const uid = useAuthStore.getState().user?.uid;
+                        const uid = cartService.userId;
                         if (!uid) return;
 
                         set({ isLoading: true, error: null });
@@ -114,7 +113,8 @@ export const useCartStore = create<CartStore>()(
                         }
                     },
 
-                    clearCart: async (uid) => {
+                    clearCart: async () => {
+                        const uid = cartService.userId;
                         if (!uid) return;
 
                         set({ isLoading: true, error: null });

@@ -2,7 +2,7 @@ import { Button, Card, CardActionArea, CardActions, CardContent, CardMedia, Grid
 import { memo, useCallback, useEffect, useMemo, useState } from "react"
 import { ImageWithDimensionsIndicated } from "../../../shared/utils/image";
 import { ModalGood } from "./ModalGood";
-import { usePizza } from "../hooks/usePizza";
+import { usePizzaStore } from "../stores/usePizzaStore";
 
 
   
@@ -126,7 +126,7 @@ interface GoodsListProps {
   
 export const GoodsList = memo(({ goodName }: GoodsListProps) => {
 
-    const pizza = usePizza()
+    const pizza = usePizzaStore()
     
     const [openModalId, setOpenModalId] = useState<string | null>(null);
   

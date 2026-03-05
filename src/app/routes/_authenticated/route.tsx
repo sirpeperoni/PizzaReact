@@ -1,9 +1,10 @@
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router'
+import { Header } from '../../../shared/components/Header/Header'
 
 export const Route = createFileRoute('/_authenticated')({
     beforeLoad: ({ context, location }) => {
         const user  = context.user
-     
+
         if (!user && location.pathname === '/home') {
           throw redirect({
             to: '/login',
@@ -14,5 +15,8 @@ export const Route = createFileRoute('/_authenticated')({
 })
 
 function RouteComponent() {
-  return <Outlet/>
+  return <>
+    <Header/>
+    <Outlet/>
+  </>
 }
