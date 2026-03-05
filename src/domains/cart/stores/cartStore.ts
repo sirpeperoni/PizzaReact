@@ -2,6 +2,7 @@ import { create } from "zustand";
 import type { CartItem, CartState, Pizza, UpdateQuantityPayload } from "../types/cart.types";
 import { combine, devtools, persist } from "zustand/middleware";
 import { cartService } from "../services/cartService";
+import { firestoreService } from "../../../shared/services/firestoreService";
 
 interface CartStore extends CartState {
     addToCart: (item: CartItem) => Promise<void>,
@@ -70,7 +71,7 @@ export const useCartStore = create<CartStore>()(
 
                     removeFromCart: async (id, settings) => {
                         const { items } = get();
-                        const uid = cartService.userId;
+                        const uid = firestoreService.userId;
                         
                         if (!uid) return;   
                         set({ isLoading: true, error: null });
@@ -94,7 +95,7 @@ export const useCartStore = create<CartStore>()(
                     updateQuantity: async (update) => {
                         const { id, quantity, settings } = update;
                         const { items } = get();
-                        const uid = cartService.userId;
+                        const uid = firestoreService.userId;
                         if (!uid) return;
 
                         set({ isLoading: true, error: null });
@@ -114,7 +115,7 @@ export const useCartStore = create<CartStore>()(
                     },
 
                     clearCart: async () => {
-                        const uid = cartService.userId;
+                        const uid = firestoreService.userId;
                         if (!uid) return;
 
                         set({ isLoading: true, error: null });

@@ -4,6 +4,7 @@ import { devtools } from 'zustand/middleware';
 import type { CartItem, GoodItemInterface } from "../types/pizza.types";
 import { pizzaService } from "../services/pizzaService";
 import { cartService } from "../../cart/services/cartService";
+import { firestoreService } from '../../../shared/services/firestoreService';
 
 interface PizzaStore {
     goods: GoodItemInterface[];
@@ -37,7 +38,7 @@ export const usePizzaStore = create<PizzaStore>()(
                 placeAnOrder: async (cartItems: CartItem[], totalPrice: number) => {
                     set({ loading: true, error: null });
                     try {
-                        const userId = cartService.userId;
+                        const userId = firestoreService.userId;
                         if (userId) {
                             await pizzaService.placeAnOrder(userId, cartItems, totalPrice);
                         }

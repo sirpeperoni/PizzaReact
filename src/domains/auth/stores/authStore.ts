@@ -71,8 +71,9 @@ export const useAuthStore = create<AuthStore>()(
             if (!currentUser) return;
             set({ isLoading: true, error: null });
             try {
-              if (currentUser.uid) {
-                await firestoreService.updateUserProfile(currentUser.uid, data);
+              const uid = firestoreService.userId
+              if (uid) {
+                await firestoreService.updateUserProfile(uid, data);
                 set({
                   user: { ...currentUser, ...data },
                 });

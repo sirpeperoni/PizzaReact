@@ -9,12 +9,14 @@ import {
 } from "firebase/firestore";
 import type { CartItem } from "../types/cart.types";
 import { auth, db } from "../../../shared/firebase";
+import { firestoreService } from "../../../shared/services/firestoreService";
 
 class CartService {
   async addToCart(item: CartItem): Promise<void> {
     try {
-      if (this.userId) {
-        const userOrdersRef = collection(db, "users", this.userId, "cart");
+      const uid = firestoreService.userId
+      if (uid) {
+        const userOrdersRef = collection(db, "users", uid, "cart");
         const docId = doc(userOrdersRef).id;
         const { id, ...itemWithoutId } = item;
         const addNewDoc = {
@@ -64,8 +66,9 @@ class CartService {
   }
 
   async getUserCart(): Promise<CartItem[]> {
-    if (this.userId) {
-      const cartRef = collection(db, "users", this.userId, "cart");
+    const uid = firestoreService.userId
+    if (uid) {
+      const cartRef = collection(db, "users", uid, "cart");
       const cartSnapshot = await getDocs(cartRef);
 
       const rawData = cartSnapshot.docs.map<CartItem>(
@@ -102,9 +105,7 @@ class CartService {
     }
   }
 
-  get userId(): string | undefined {
-    return auth.currentUser?.uid;
-  }
+  
 }
 
 export const cartService = new CartService();

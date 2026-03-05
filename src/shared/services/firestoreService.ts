@@ -1,6 +1,6 @@
 import { collection, doc, getDoc, getDocs, query, setDoc, Timestamp, updateDoc, where } from "firebase/firestore";
 import type { UserData } from "../../domains/auth/types/auth.types";
-import { db } from "../firebase";
+import { auth, db } from "../firebase";
 import { cartService } from "../../domains/cart/services/cartService";
 
 class FirestoreService {
@@ -39,6 +39,10 @@ class FirestoreService {
         } catch (error) {
             
         }
+    }
+
+    get userId(): string | undefined {
+        return auth.currentUser?.uid;
     }
 
 
