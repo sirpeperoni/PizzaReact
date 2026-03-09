@@ -7,25 +7,19 @@ interface SubmitButtonProps {
 }
 
 export const SubmitButton = ({ isSubmitting, isLoading, isValid }: SubmitButtonProps) => {
-    const isDisabled = isSubmitting || isLoading || !isValid;
+  const isDisabled = isSubmitting || isLoading || !isValid;
 
-    return (
-        <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            disabled={isDisabled}
-            sx={{ 
-                borderRadius: 50,
-                height: 45
-            }}
-        >
-            {isSubmitting || isLoading ? (
-                    <CircularProgress size={24} color="inherit" />
-                ) : (
-                    'Войти'
-                )
-            }
-        </Button>
-    );
+  return (
+    <Button
+      type='submit'
+      fullWidth
+      variant='contained'
+      disabled={isDisabled}
+      sx={{
+        borderRadius: 50,
+        height: 45,
+      }}>
+      {isSubmitting || isLoading ? <CircularProgress size={24} color='inherit' /> : 'Войти'}
+    </Button>
+  );
 };

@@ -1,13 +1,13 @@
-.form{
-    display: flex;
-    flex-direction: column;
-    padding: 25px;
-    border-radius: 25px;
-    width: 370px;
-    gap: 10px;
+.form {
+  display: flex;
+  flex-direction: column;
+  padding: 25px;
+  border-radius: 25px;
+  width: 370px;
+  gap: 10px;
 }
 
-.text__buttons{
-    display: flex;
-    justify-content: space-between;
+.text__buttons {
+  display: flex;
+  justify-content: space-between;
 }

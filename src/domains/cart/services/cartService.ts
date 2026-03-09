@@ -1,22 +1,14 @@
-import {
-  addDoc,
-  collection,
-  deleteDoc,
-  doc,
-  getDocs,
-  setDoc,
-  updateDoc,
-} from "firebase/firestore";
-import type { CartItem } from "../types/cart.types";
-import { auth, db } from "../../../shared/firebase";
-import { firestoreService } from "../../../shared/services/firestoreService";
+import { collection, deleteDoc, doc, getDocs, setDoc, updateDoc } from 'firebase/firestore';
+import type { CartItem } from '../types/cart.types';
+import { db } from '../../../shared/firebase';
+import { firestoreService } from '../../../shared/services/firestoreService';
 
 class CartService {
   async addToCart(item: CartItem): Promise<void> {
     try {
-      const uid = firestoreService.userId
+      const uid = firestoreService.userId;
       if (uid) {
-        const userOrdersRef = collection(db, "users", uid, "cart");
+        const userOrdersRef = collection(db, 'users', uid, 'cart');
         const docId = doc(userOrdersRef).id;
         const { id, ...itemWithoutId } = item;
         const addNewDoc = {
@@ -32,33 +24,25 @@ class CartService {
 
   async removeFromCart(item: CartItem, userId: string): Promise<void> {
     try {
-      const cartItemRef = doc(db, "users", userId, "cart", item.id);
+      const cartItemRef = doc(db, 'users', userId, 'cart', item.id);
       await deleteDoc(cartItemRef);
     } catch (error) {
       throw error;
     }
   }
 
-  async updateCartItem(
-    itemId: string,
-    userId: string,
-    updatedData: Partial<CartItem>,
-  ): Promise<void> {
+  async updateCartItem(itemId: string, userId: string, updatedData: Partial<CartItem>): Promise<void> {
     try {
-      const itemRef = doc(db, "users", userId, "cart", itemId);
+      const itemRef = doc(db, 'users', userId, 'cart', itemId);
       await updateDoc(itemRef, updatedData);
     } catch (error) {
       throw error;
     }
   }
 
-  async updateCartItemQuantity(
-    itemId: string,
-    userId: string,
-    quantity: number,
-  ): Promise<void> {
+  async updateCartItemQuantity(itemId: string, userId: string, quantity: number): Promise<void> {
     try {
-      const itemRef = doc(db, "users", userId, "cart", itemId);
+      const itemRef = doc(db, 'users', userId, 'cart', itemId);
       await updateDoc(itemRef, { quantity });
     } catch (error) {
       throw error;
@@ -66,24 +50,22 @@ class CartService {
   }
 
   async getUserCart(): Promise<CartItem[]> {
-    const uid = firestoreService.userId
+    const uid = firestoreService.userId;
     if (uid) {
-      const cartRef = collection(db, "users", uid, "cart");
+      const cartRef = collection(db, 'users', uid, 'cart');
       const cartSnapshot = await getDocs(cartRef);
 
-      const rawData = cartSnapshot.docs.map<CartItem>(
-        (doc) => doc.data() as CartItem,
-      );
+      const rawData = cartSnapshot.docs.map<CartItem>(doc => doc.data() as CartItem);
 
       return rawData.reduce<CartItem[]>((acc, curr) => {
-          const pizzaId = `${curr.name}.${curr.settings?.size ?? ''}.${curr.settings?.size ?? ''}`;
+        const pizzaId = `${curr.name}.${curr.settings?.size ?? ''}.${curr.settings?.size ?? ''}`;
 
-          const existingItem = acc.find((item) => item.pizzaId === pizzaId);
-          if (existingItem) {
-            existingItem.quantity += curr.quantity;
-          } else {
-            acc.push({ ...curr, pizzaId });
-          }
+        const existingItem = acc.find(item => item.pizzaId === pizzaId);
+        if (existingItem) {
+          existingItem.quantity += curr.quantity;
+        } else {
+          acc.push({ ...curr, pizzaId });
+        }
 
         return acc;
       }, []);
@@ -94,18 +76,16 @@ class CartService {
 
   async clearCart(userId: string): Promise<void> {
     try {
-      const cartRef = collection(db, "users", userId, "cart");
+      const cartRef = collection(db, 'users', userId, 'cart');
       const cartSnapshot = await getDocs(cartRef);
 
-      const deletePromises = cartSnapshot.docs.map((doc) => deleteDoc(doc.ref));
+      const deletePromises = cartSnapshot.docs.map(doc => deleteDoc(doc.ref));
 
       await Promise.all(deletePromises);
     } catch (error) {
       throw error;
     }
   }
-
-  
 }
 
 export const cartService = new CartService();

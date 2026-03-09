@@ -1,27 +1,21 @@
-import { Box, Button, Dialog, DialogContent, IconButton, List, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material"
+import { Box, Button, Dialog, DialogContent, IconButton, List, Stack, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { useCallback, useMemo } from "react";
-import { useCartStore } from "../../cart/stores/cartStore";
-import type { CartItem } from "../types/pizza.types";
-import { ImageWithDimensionsIndicated } from "../../../shared/utils/image";
-import { useAuthStore } from "../../auth/stores/authStore";
-import { useForm, Controller } from "react-hook-form";
+import { useCallback } from 'react';
+import { useCartStore } from '../../cart/stores/cartStore';
+import type { CartItem, GoodItemInterface } from '../types/pizza.types';
+import { ImageWithDimensionsIndicated } from '../../../shared/utils/image';
+import { useAuthStore } from '../../auth/stores/authStore';
+import { Controller, useForm } from 'react-hook-form';
 
 interface ModalGoodInterface {
-    id?: string,
-    open: boolean,
-    handleClose: () => void,
-    img: string,
-    title: string,
-    content: string,
-    priceArr: number[],
-    sizes: string[],
-    dough: string[],
+  open: boolean;
+  handleClose: () => void;
+  data: GoodItemInterface | null;
 }
 
 interface FormValues {
-    size: string;
-    dough: string;
+  size: string;
+  dough: string;
 }
 
 // const PIZZA_SIZES = [
@@ -35,242 +29,247 @@ interface FormValues {
 //     { value: 'tradition', label: 'Традиционное' },
 //     { value: 'thin', label: 'Тонкое' },
 // ] as const;
-  
+
 const IMAGE_DIMENSIONS = {
-    width: 584,
-    height: 584
+  width: 584,
+  height: 584,
 } as const;
 
 const DIALOG_SIZES = {
-    width: {
-        xs: '95%',
-        sm: '800px',
-        md: '1000px',
-        lg: '1100px',
-        xl: '1200px'
-    },
-    height: {
-        xs: '650px',
-        sm: '650px',
-        md: '650px',
-        lg: '650px',
-        xl: '650px'
-    }
+  width: {
+    xs: '95%',
+    sm: '800px',
+    md: '1000px',
+    lg: '1100px',
+    xl: '1200px',
+  },
+  height: {
+    xs: '650px',
+    sm: '650px',
+    md: '650px',
+    lg: '650px',
+    xl: '650px',
+  },
 } as const;
 
-export const ModalGood = ({id, open, handleClose, img, title, content, priceArr, sizes, dough}: ModalGoodInterface) => {
-    const addToCart = useCartStore((state) => state.addToCart)
-    const uid = useAuthStore((state) => state.user?.uid)
+export const ModalGood = ({ open, handleClose, data }: ModalGoodInterface) => {
+  const addToCart = useCartStore(state => state.addToCart);
+  const uid = useAuthStore(state => state.user?.uid);
 
-    const { control, handleSubmit, watch, formState: { errors } } = useForm<FormValues>({
-        defaultValues: {
-            size: sizes[0],
-            dough: dough[0],
-        }
-    });
+  const {
+    control,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<FormValues>({
+    defaultValues: {
+      size: data?.sizes[0],
+      dough: data?.dough[0],
+    },
+  });
 
-    const selectedSize = watch('size');
-    const selectedDough = watch('dough');
+  const selectedSize = watch('size');
+  // const selectedDough = watch('dough');
 
-    const currentPrice = useCallback(() => {
-        const sizeIndex = sizes.findIndex(size => size === selectedSize);
-        return priceArr[sizeIndex] ?? priceArr[0];
-    }, [selectedSize, priceArr]);
+  const currentPrice = useCallback(() => {
+    const sizeIndex = data?.sizes.findIndex(size => size === selectedSize);
+    return sizeIndex ? data?.price?.[sizeIndex] : data?.price?.[0];
+  }, [selectedSize, data?.sizes]);
 
-    const onSubmit = useCallback(async (data: any) => {
-        if (!id) return;
-        console.log(data)
-        const sizeIndex = sizes.findIndex(size => size === data.size);
-        const size = sizes[sizeIndex];
-        
-        handleClose();
-        
+  const onSubmit = useCallback(
+    async (formValues: FormValues) => {
+      console.log(data);
+      const sizeIndex = (data?.sizes ?? []).findIndex(size => size === formValues.size);
+      const size = (data?.sizes ?? [])[sizeIndex];
+
+      handleClose();
+
+      if (data) {
         await addToCart({
-            id,
-            name: title,
-            price: currentPrice(),
-            image: img,
-            quantity: 1,
-            settings: {
-                size: size,
-                dough: data.dough
-            }
+          id: data.id,
+          name: data.title,
+          price: currentPrice(),
+          image: data.img,
+          quantity: 1,
+          settings: {
+            size: size,
+            dough: formValues.dough,
+          },
         } as CartItem);
-    }, [id, title, currentPrice, img, handleClose, addToCart, uid]);
+      }
+    },
+    [currentPrice, handleClose, addToCart, uid, data],
+  );
 
-    const sizeButtons = useMemo(() => (
-        sizes.map((value) => (
-            <ToggleButton key={value} value={value}>
-                {value}
-            </ToggleButton>
-        ))
-    ), []);
+  return (
+    <Box>
+      <Dialog
+        onClose={handleClose}
+        open={open}
+        maxWidth={false}
+        PaperProps={{ sx: { borderRadius: 15 } }}
+        sx={{
+          '& .MuiDialog-paper': {
+            width: DIALOG_SIZES.width,
+            maxWidth: DIALOG_SIZES.width,
+            height: DIALOG_SIZES.height,
+            maxHeight: DIALOG_SIZES.height,
+            m: 0,
+          },
+        }}>
+        <DialogContent
+          dividers
+          sx={{
+            display: 'flex',
+            p: 3,
+            height: '60vh',
+            overflow: 'hidden',
+          }}>
+          <IconButton
+            aria-label='close'
+            onClick={handleClose}
+            sx={{
+              position: 'absolute',
+              right: 20,
+              top: 20,
+              zIndex: 1401,
+              color: 'black',
+              '&:hover': {
+                backgroundColor: 'rgba(0, 0, 0, 0.2)',
+              },
+              width: 48,
+              height: 48,
+            }}>
+            <CloseIcon />
+          </IconButton>
 
-    const doughButtons = useMemo(() => (
-        dough.map((value) => (
-            <ToggleButton key={value} value={value}>
-                {value}
-            </ToggleButton>
-        ))
-    ), []);
+          <Box sx={{ flexShrink: 0, mr: 3 }}>
+            <img
+              width={IMAGE_DIMENSIONS.width}
+              src={ImageWithDimensionsIndicated({
+                r: IMAGE_DIMENSIONS.height,
+                x: IMAGE_DIMENSIONS.width,
+                id: data?.img,
+              })}
+              alt={data?.title}
+              style={{ display: 'block' }}
+            />
+          </Box>
 
-    return (
-        <Box>
-            <Dialog
-                onClose={handleClose}
-                open={open}
-                maxWidth={false}
-                PaperProps={{sx: {borderRadius: 15}}}
-                sx={{            
-                    '& .MuiDialog-paper': {
-                        width: DIALOG_SIZES.width,
-                        maxWidth: DIALOG_SIZES.width,
-                        height: DIALOG_SIZES.height,
-                        maxHeight: DIALOG_SIZES.height,
-                        m: 0
-                    }
-                }}
-            >
-                <DialogContent dividers sx={{
-                    display: "flex",
-                    p: 3,
-                    height: "60vh",
-                    overflow: "hidden"
+          <Box
+            sx={{
+              flex: 1,
+              overflowY: 'hidden',
+              pr: 1,
+              position: 'relative',
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+            }}>
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              style={{
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+              }}>
+              <List
+                sx={{
+                  height: '80%',
+                  overflowY: 'auto',
+                  pr: 1,
                 }}>
-                    <IconButton
-                        aria-label="close"
-                        onClick={handleClose}
-                        sx={{
-                            position: 'absolute',
-                            right: 20,
-                            top: 20,
-                            zIndex: 1401,
-                            color: 'black',
-                            '&:hover': {
-                                backgroundColor: 'rgba(0, 0, 0, 0.2)',
-                            },
-                            width: 48,
-                            height: 48,
-                        }}
-                    >
-                        <CloseIcon />
-                    </IconButton>
-                    
-                    <Box sx={{ flexShrink: 0, mr: 3 }}>
-                        <img
-                            width={IMAGE_DIMENSIONS.width}
-                            src={ImageWithDimensionsIndicated({
-                                r: IMAGE_DIMENSIONS.height,
-                                x: IMAGE_DIMENSIONS.width,
-                                id: img
-                            })}
-                            alt={title}
-                            style={{ display: 'block' }}
-                        />
-                    </Box>
-                    
-                    <Box sx={{
-                        flex: 1, 
-                        overflowY: "hidden",
-                        pr: 1,
-                        position: "relative",
-                        height: "100%",
-                        display: "flex",
-                        flexDirection: "column",
-                    }}>
-                        <form onSubmit={handleSubmit(onSubmit)} style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-                            <List sx={{
-                                height: "80%",
-                                overflowY: "auto", 
-                                pr: 1,
-                            }}>
-                                <Typography variant="h4" sx={{fontWeight: "bold"}} gutterBottom>
-                                    {title}
-                                </Typography>
-                                <Typography gutterBottom>
-                                    {content}
-                                </Typography>
-                                
-                                <Stack spacing={1}>
-                                    <Controller
-                                        name="size"
-                                        control={control}
-                                        rules={{ required: "Выберите размер пиццы" }}
-                                        render={({ field }) => (
-                                            <ToggleButtonGroup
-                                                {...field}
-                                                color="warning"
-                                                size="small"
-                                                fullWidth
-                                                exclusive
-                                                aria-label="pizza sizes"
-                                                onChange={(_, value) => value && field.onChange(value)}
-                                            >
-                                                {sizeButtons}
-                                            </ToggleButtonGroup>
-                                        )}
-                                    />
-                                    {errors.size && (
-                                        <Typography color="error" variant="caption">
-                                            {errors.size.message}
-                                        </Typography>
-                                    )}
+                <Typography variant='h4' sx={{ fontWeight: 'bold' }} gutterBottom>
+                  {data?.title}
+                </Typography>
+                <Typography gutterBottom>{data?.content}</Typography>
 
-                                    <Controller
-                                        name="dough"
-                                        control={control}
-                                        rules={{ required: "Выберите тип теста" }}
-                                        render={({ field }) => (
-                                            <ToggleButtonGroup
-                                                {...field}
-                                                color="warning"
-                                                size="small"
-                                                fullWidth
-                                                exclusive
-                                                aria-label="dough types"
-                                                onChange={(_, value) => value && field.onChange(value)}
-                                            >
-                                                {doughButtons}
-                                            </ToggleButtonGroup>
-                                        )}
-                                    />
-                                    {errors.dough && (
-                                        <Typography color="error" variant="caption">
-                                            {errors.dough.message}
-                                        </Typography>
-                                    )}
+                <Stack spacing={1}>
+                  <Controller
+                    name='size'
+                    control={control}
+                    rules={{ required: 'Выберите размер пиццы' }}
+                    render={({ field }) => (
+                      <ToggleButtonGroup
+                        {...field}
+                        color='warning'
+                        size='small'
+                        fullWidth
+                        exclusive
+                        aria-label='pizza sizes'
+                        onChange={(_, value) => value && field.onChange(value)}>
+                        {(data?.sizes ?? []).map(value => (
+                          <ToggleButton key={value} value={value}>
+                            {value}
+                          </ToggleButton>
+                        ))}
+                      </ToggleButtonGroup>
+                    )}
+                  />
+                  {errors.size && (
+                    <Typography color='error' variant='caption'>
+                      {errors.size.message}
+                    </Typography>
+                  )}
 
-                                    <Typography variant="h5" sx={{fontWeight: "bold"}}>
-                                        Добавить по вкусу
-                                    </Typography>
-                                </Stack>
-                            </List>
-                            
-                            <Box sx={{
-                                height: "20%",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                p: 1
-                            }}>
-                                <Button 
-                                    type="submit"
-                                    sx={{
-                                        borderRadius: 15, 
-                                        width: "100%", 
-                                        height: "60%", 
-                                        fontWeight: "bold"
-                                    }} 
-                                    color="warning" 
-                                    variant="contained"
-                                >
-                                    В корзину за {currentPrice()} ₽
-                                </Button>
-                            </Box>
-                        </form>
-                    </Box>
-                </DialogContent>
-            </Dialog>
-        </Box>
-    )
-}
+                  <Controller
+                    name='dough'
+                    control={control}
+                    rules={{ required: 'Выберите тип теста' }}
+                    render={({ field }) => (
+                      <ToggleButtonGroup
+                        {...field}
+                        color='warning'
+                        size='small'
+                        fullWidth
+                        exclusive
+                        aria-label='dough types'
+                        onChange={(_, value) => value && field.onChange(value)}>
+                        {(data?.dough ?? []).map(value => (
+                          <ToggleButton key={value} value={value}>
+                            {value}
+                          </ToggleButton>
+                        ))}
+                      </ToggleButtonGroup>
+                    )}
+                  />
+                  {errors.dough && (
+                    <Typography color='error' variant='caption'>
+                      {errors.dough.message}
+                    </Typography>
+                  )}
+
+                  <Typography variant='h5' sx={{ fontWeight: 'bold' }}>
+                    Добавить по вкусу
+                  </Typography>
+                </Stack>
+              </List>
+
+              <Box
+                sx={{
+                  height: '20%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  p: 1,
+                }}>
+                <Button
+                  type='submit'
+                  sx={{
+                    borderRadius: 15,
+                    width: '100%',
+                    height: '60%',
+                    fontWeight: 'bold',
+                  }}
+                  color='warning'
+                  variant='contained'>
+                  В корзину за {currentPrice()} ₽
+                </Button>
+              </Box>
+            </form>
+          </Box>
+        </DialogContent>
+      </Dialog>
+    </Box>
+  );
+};

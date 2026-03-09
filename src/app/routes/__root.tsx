@@ -1,17 +1,21 @@
-import * as React from 'react'
-import { Outlet, createRootRoute } from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '@tanstack/router-devtools'
-import { Header } from '../../shared/components/Header/Header'
+import * as React from 'react';
+import { createRootRouteWithContext, Outlet } from '@tanstack/react-router';
+import { TanStackRouterDevtools } from '@tanstack/router-devtools';
+import type { UserData } from '../../domains/auth/types';
 
-export const Route = createRootRoute({
+interface RouterContext {
+  user: UserData | null;
+}
+
+export const Route = createRootRouteWithContext<RouterContext>()({
   component: RootComponent,
-})
+});
 
 function RootComponent() {
   return (
     <React.Fragment>
       <Outlet />
-      <TanStackRouterDevtools/>
+      <TanStackRouterDevtools />
     </React.Fragment>
-  )
+  );
 }

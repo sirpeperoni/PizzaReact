@@ -1,16 +1,10 @@
-import { create } from "zustand";
-import { combine, devtools, persist } from "zustand/middleware";
-import type {
-  AuthState,
-  LoginCredentials,
-  RegisterData,
-  UserData,
-} from "../types";
-import { authService } from "../services/authService";
-import { firestoreService } from "../../../shared/services/firestoreService";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../../../shared/firebase";
-import { cartService } from "../../cart/services/cartService";
+import { create } from 'zustand';
+import { combine, devtools, persist } from 'zustand/middleware';
+import type { AuthState, LoginCredentials, RegisterData, UserData } from '../types';
+import { authService } from '../services/authService';
+import { firestoreService } from '../../../shared/services/firestoreService';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../../../shared/firebase';
 
 interface AuthStore extends AuthState {
   login: (credentials: LoginCredentials) => Promise<void>;
@@ -39,7 +33,7 @@ export const useAuthStore = create<AuthStore>()(
               await authService.login(credentials);
             } catch (error: any) {
               set({
-                error: error.message || "Login failed",
+                error: error.message || 'Login failed',
                 isLoading: false,
               });
             }
@@ -50,7 +44,7 @@ export const useAuthStore = create<AuthStore>()(
               await authService.register(data);
             } catch (error: any) {
               set({
-                error: error.message || "Registration failed",
+                error: error.message || 'Registration failed',
                 isLoading: false,
               });
             }
@@ -61,7 +55,7 @@ export const useAuthStore = create<AuthStore>()(
               await authService.logout();
             } catch (error: any) {
               set({
-                error: error.message || "Logout failed",
+                error: error.message || 'Logout failed',
                 isLoading: false,
               });
             }
@@ -71,7 +65,7 @@ export const useAuthStore = create<AuthStore>()(
             if (!currentUser) return;
             set({ isLoading: true, error: null });
             try {
-              const uid = firestoreService.userId
+              const uid = firestoreService.userId;
               if (uid) {
                 await firestoreService.updateUserProfile(uid, data);
                 set({
@@ -80,54 +74,49 @@ export const useAuthStore = create<AuthStore>()(
               }
             } catch (error: any) {
               set({
-                error: error.message || "Logout failed",
+                error: error.message || 'Logout failed',
               });
             }
           },
           clearError: () => set({ error: null }),
           initAuth: () => {
-            const unsubscribe = onAuthStateChanged(
-              auth,
-              async (firebaseUser) => {
-                const currentUser = get().user;
-                set({ isLoading: true });
-                try {
-                  if (firebaseUser) {
-                    if (!currentUser || currentUser.uid !== firebaseUser.uid) {
-                      const user = await firestoreService.getUserFromFirestore(
-                        firebaseUser.uid,
-                      );
-                      set({
-                        user: user,
-                        isAuthenticated: true,
-                      });
-                    }
-                  } else {
+            const unsubscribe = onAuthStateChanged(auth, async firebaseUser => {
+              const currentUser = get().user;
+              set({ isLoading: true });
+              try {
+                if (firebaseUser) {
+                  if (!currentUser || currentUser.uid !== firebaseUser.uid) {
+                    const user = await firestoreService.getUserFromFirestore(firebaseUser.uid);
                     set({
-                      user: null,
-                      isAuthenticated: false,
+                      user: user,
+                      isAuthenticated: true,
                     });
                   }
-                } catch (error) {
+                } else {
                   set({
                     user: null,
                     isAuthenticated: false,
-                    error: "Failed to load user data",
                   });
-                } finally {
-                  set({ isLoading: false });
                 }
-              },
-            );
+              } catch (error) {
+                set({
+                  user: null,
+                  isAuthenticated: false,
+                  error: 'Failed to load user data',
+                });
+              } finally {
+                set({ isLoading: false });
+              }
+            });
             return unsubscribe;
           },
         };
       }),
-      { name: "auth-store" },
+      { name: 'auth-store' },
     ),
     {
-      name: "auth-storage",
-      partialize: (state) => ({
+      name: 'auth-storage',
+      partialize: state => ({
         user: state.user,
         isAuthenticated: state.isAuthenticated,
       }),

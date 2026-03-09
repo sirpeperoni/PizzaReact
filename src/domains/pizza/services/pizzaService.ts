@@ -1,23 +1,19 @@
-import { addDoc, collection, getDocs } from "firebase/firestore";
-import type { CartItem, GoodItemInterface } from "../types/pizza.types";
-import { db } from "../../../shared/firebase";
+import { addDoc, collection, getDocs } from 'firebase/firestore';
+import type { CartItem, GoodItemInterface } from '../types/pizza.types';
+import { db } from '../../../shared/firebase';
 
 class PizzaService {
   async fetchGoods(collectionName: string): Promise<GoodItemInterface[]> {
     const querySnapshot = await getDocs(collection(db, collectionName));
-    return querySnapshot.docs.map((doc) => ({
+    return querySnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data(),
     })) as GoodItemInterface[];
   }
 
-  async placeAnOrder(
-    userId: string,
-    cartItems: CartItem[],
-    totalPrice: number,
-  ): Promise<void> {
+  async placeAnOrder(userId: string, cartItems: CartItem[], totalPrice: number): Promise<void> {
     try {
-      const userOrdersRef = collection(db, "users", userId, "orders");
+      const userOrdersRef = collection(db, 'users', userId, 'orders');
       const order = {
         uid: userId,
         items: cartItems,
