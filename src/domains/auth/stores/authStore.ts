@@ -63,13 +63,14 @@ export const useAuthStore = create<AuthStore>()(
           updateProfile: async (data: Partial<UserData>) => {
             const currentUser = get().user;
             if (!currentUser) return;
-            set({ isLoading: true, error: null });
+            //set({ isLoading: true, error: null });
             try {
               const uid = firestoreService.userId;
               if (uid) {
                 await firestoreService.updateUserProfile(uid, data);
                 set({
                   user: { ...currentUser, ...data },
+                  isLoading: false,
                 });
               }
             } catch (error: any) {

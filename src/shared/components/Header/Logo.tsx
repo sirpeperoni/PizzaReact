@@ -1,5 +1,6 @@
-import { Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import LocalPizzaIcon from '@mui/icons-material/LocalPizza';
+import { useRouter } from '@tanstack/react-router';
 
 interface LogoProps {
   variant: 'mobile' | 'desktop';
@@ -7,9 +8,22 @@ interface LogoProps {
 
 export const Logo = ({ variant }: LogoProps) => {
   const isDesktop = variant === 'desktop';
-
+  const router = useRouter();
   return (
-    <>
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        ...(variant === 'mobile' && {
+          position: 'absolute',
+          left: '50%',
+          transform: 'translateX(-50%)',
+        }),
+      }}
+      onClick={
+        () => router.navigate({ to: '/home' })
+      }
+    >
       <LocalPizzaIcon
         sx={{
           display: {
@@ -30,16 +44,15 @@ export const Logo = ({ variant }: LogoProps) => {
             : {
                 mr: 2,
                 display: { xs: 'flex', md: 'none' },
-                flexGrow: 1,
               }),
           fontFamily: 'monospace',
           fontWeight: 700,
           letterSpacing: '.3rem',
           color: 'inherit',
           textDecoration: 'none',
-        }}>
+      }}>
         PIZZA
       </Typography>
-    </>
+    </Box>
   );
 };

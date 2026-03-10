@@ -1,6 +1,6 @@
 import { AppBar, Container, Toolbar } from '@mui/material';
 import { useState } from 'react';
-import { Profile } from './Profile';
+import { ProfileIcon } from './ProfileIcon';
 import { Logo } from './Logo';
 import { MobileMenu } from './MobileMenu';
 import { NavigationMenu } from './NavigationMenu';
@@ -54,7 +54,7 @@ export const Header = () => {
 
             <DesktopMenu pages={pages} onClick={handleCloseNavMenu} />
 
-            <Profile anchorEl={anchorElUser} onOpen={handleOpenUserMenu} onClose={handleCloseUserMenu} />
+            <ProfileIcon anchorEl={anchorElUser} onOpen={handleOpenUserMenu} onClose={handleCloseUserMenu} />
 
             <CartButton onClick={handleCartClick} />
           </Toolbar>

@@ -22,6 +22,7 @@ import { useEffect } from 'react';
 import type { Pizza } from '../../../domains/cart/types/cart.types';
 import { Add, Remove } from '@mui/icons-material';
 import { usePizzaStore } from '../../../domains/pizza/stores/usePizzaStore';
+import { Loading } from '../Loading/Loading';
 
 interface CartDrawerProps {
   open: boolean;
@@ -132,18 +133,10 @@ export const CartDrawer = ({ open, onClose }: CartDrawerProps) => {
       </Box>
 
       <Divider />
+          
+          
+      {isLoading && items.length === 0 && ( <Loading height='100vh'/> )}
 
-      {isLoading && items.length === 0 && (
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '60vh',
-          }}>
-          <CircularProgress />
-        </Box>
-      )}
 
       {error && (
         <Alert severity='error' sx={{ mt: 2 }} onClose={handleRefreshCart}>

@@ -3,7 +3,7 @@ import './App.css';
 import { router } from './router';
 import { useEffect } from 'react';
 import { useAuthStore } from '../domains/auth/stores/authStore';
-import { Box, CircularProgress } from '@mui/material';
+import { Loading } from '../shared/components/Loading/Loading';
 
 function App() {
   const isLoading = useAuthStore(state => state.isLoading);
@@ -19,18 +19,8 @@ function App() {
     };
   }, [initAuth]);
 
-  if (isLoading) {
-    return (
-      <Box
-        sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: '90vh',
-        }}>
-        <CircularProgress size={24} color='inherit' />
-      </Box>
-    );
+  if(isLoading){
+    return <Loading/>
   }
 
   return (

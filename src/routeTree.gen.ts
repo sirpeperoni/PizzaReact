@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './app/routes/_authentica
 import { Route as IndexRouteImport } from './app/routes/index'
 import { Route as NotauthenticatedRegisterRouteImport } from './app/routes/_notauthenticated/register'
 import { Route as NotauthenticatedLoginRouteImport } from './app/routes/_notauthenticated/login'
+import { Route as AuthenticatedProfileRouteImport } from './app/routes/_authenticated/profile'
 import { Route as AuthenticatedHomeRouteImport } from './app/routes/_authenticated/home'
 import { Route as AuthenticatedAdminRouteRouteImport } from './app/routes/_authenticated/_admin/route'
 import { Route as AuthenticatedAdminAdminRouteImport } from './app/routes/_authenticated/_admin/admin'
@@ -42,6 +43,11 @@ const NotauthenticatedLoginRoute = NotauthenticatedLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => NotauthenticatedRouteRoute,
 } as any)
+const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
   id: '/home',
   path: '/home',
@@ -60,6 +66,7 @@ const AuthenticatedAdminAdminRoute = AuthenticatedAdminAdminRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/home': typeof AuthenticatedHomeRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/login': typeof NotauthenticatedLoginRoute
   '/register': typeof NotauthenticatedRegisterRoute
   '/admin': typeof AuthenticatedAdminAdminRoute
@@ -67,6 +74,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/home': typeof AuthenticatedHomeRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/login': typeof NotauthenticatedLoginRoute
   '/register': typeof NotauthenticatedRegisterRoute
   '/admin': typeof AuthenticatedAdminAdminRoute
@@ -78,15 +86,16 @@ export interface FileRoutesById {
   '/_notauthenticated': typeof NotauthenticatedRouteRouteWithChildren
   '/_authenticated/_admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/_authenticated/home': typeof AuthenticatedHomeRoute
+  '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_notauthenticated/login': typeof NotauthenticatedLoginRoute
   '/_notauthenticated/register': typeof NotauthenticatedRegisterRoute
   '/_authenticated/_admin/admin': typeof AuthenticatedAdminAdminRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/home' | '/login' | '/register' | '/admin'
+  fullPaths: '/' | '/home' | '/profile' | '/login' | '/register' | '/admin'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/home' | '/login' | '/register' | '/admin'
+  to: '/' | '/home' | '/profile' | '/login' | '/register' | '/admin'
   id:
     | '__root__'
     | '/'
@@ -94,6 +103,7 @@ export interface FileRouteTypes {
     | '/_notauthenticated'
     | '/_authenticated/_admin'
     | '/_authenticated/home'
+    | '/_authenticated/profile'
     | '/_notauthenticated/login'
     | '/_notauthenticated/register'
     | '/_authenticated/_admin/admin'
@@ -142,6 +152,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NotauthenticatedLoginRouteImport
       parentRoute: typeof NotauthenticatedRouteRoute
     }
+    '/_authenticated/profile': {
+      id: '/_authenticated/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedProfileRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/home': {
       id: '/_authenticated/home'
       path: '/home'
@@ -183,11 +200,13 @@ const AuthenticatedAdminRouteRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
+  AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRouteWithChildren,
   AuthenticatedHomeRoute: AuthenticatedHomeRoute,
+  AuthenticatedProfileRoute: AuthenticatedProfileRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

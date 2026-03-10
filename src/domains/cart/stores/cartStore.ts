@@ -63,16 +63,13 @@ export const useCartStore = create<CartStore>()(
 
           removeFromCart: async (id, settings) => {
             const { items } = get();
-            const uid = firestoreService.userId;
-
-            if (!uid) return;
             set({ isLoading: true, error: null });
 
             try {
               const matcher = createItemMatcher(id, settings);
               const itemToRemove = items.find(matcher);
               if (itemToRemove?.id) {
-                await cartService.removeFromCart(itemToRemove, uid);
+                await cartService.removeFromCart(itemToRemove);
                 await loadUserCart();
               }
             } catch (error) {
@@ -86,15 +83,13 @@ export const useCartStore = create<CartStore>()(
           updateQuantity: async updateData => {
             const { id, quantity, settings } = updateData;
             const { items } = get();
-            const uid = firestoreService.userId;
-            if (!uid) return;
 
             set({ isLoading: true, error: null });
             try {
               const matcher = createItemMatcher(id, settings);
               const itemToUpdate = items.find(matcher);
               if (itemToUpdate?.id) {
-                await cartService.updateCartItemQuantity(itemToUpdate.id, uid, quantity);
+                await cartService.updateCartItemQuantity(itemToUpdate.id, quantity);
                 await loadUserCart();
               }
             } catch (error) {
@@ -106,12 +101,9 @@ export const useCartStore = create<CartStore>()(
           },
 
           clearCart: async () => {
-            const uid = firestoreService.userId;
-            if (!uid) return;
-
             set({ isLoading: true, error: null });
             try {
-              await cartService.clearCart(uid);
+              await cartService.clearCart();
               set({
                 items: [],
                 totalQuantity: 0,

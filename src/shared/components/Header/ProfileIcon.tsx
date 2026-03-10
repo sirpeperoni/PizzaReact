@@ -10,7 +10,7 @@ interface ProfileProps {
   onClose: () => void;
 }
 
-export const Profile = ({ anchorEl, onOpen, onClose }: ProfileProps) => {
+export const ProfileIcon = ({ anchorEl, onOpen, onClose }: ProfileProps) => {
   const [firebaseRole, setFirebaseRole] = useState<string | null>(null);
   const user = useAuthStore(state => state.user);
   const router = useRouter();
@@ -46,6 +46,7 @@ export const Profile = ({ anchorEl, onOpen, onClose }: ProfileProps) => {
 
     switch (setting) {
       case 'Профиль':
+        router.navigate({ to: '/profile' });
         break;
       case 'Админка':
         router.navigate({ to: '/admin' });

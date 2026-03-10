@@ -22,28 +22,37 @@ class CartService {
     }
   }
 
-  async removeFromCart(item: CartItem, userId: string): Promise<void> {
+  async removeFromCart(item: CartItem): Promise<void> {
     try {
-      const cartItemRef = doc(db, 'users', userId, 'cart', item.id);
-      await deleteDoc(cartItemRef);
+      const userId = firestoreService.userId;
+      if(userId){
+        const cartItemRef = doc(db, 'users', userId, 'cart', item.id);
+        await deleteDoc(cartItemRef);
+      }
     } catch (error) {
       throw error;
     }
   }
 
-  async updateCartItem(itemId: string, userId: string, updatedData: Partial<CartItem>): Promise<void> {
+  async updateCartItem(itemId: string, updatedData: Partial<CartItem>): Promise<void> {
     try {
-      const itemRef = doc(db, 'users', userId, 'cart', itemId);
-      await updateDoc(itemRef, updatedData);
+      const userId = firestoreService.userId;
+      if(userId) {
+        const itemRef = doc(db, 'users', userId, 'cart', itemId);
+        await updateDoc(itemRef, updatedData);
+      }
     } catch (error) {
       throw error;
     }
   }
 
-  async updateCartItemQuantity(itemId: string, userId: string, quantity: number): Promise<void> {
+  async updateCartItemQuantity(itemId: string, quantity: number): Promise<void> {
     try {
-      const itemRef = doc(db, 'users', userId, 'cart', itemId);
-      await updateDoc(itemRef, { quantity });
+      const userId = firestoreService.userId;
+      if(userId) {
+        const itemRef = doc(db, 'users', userId, 'cart', itemId);
+        await updateDoc(itemRef, { quantity });
+      }
     } catch (error) {
       throw error;
     }
@@ -74,14 +83,18 @@ class CartService {
     return [];
   }
 
-  async clearCart(userId: string): Promise<void> {
+  async clearCart(): Promise<void> {
     try {
-      const cartRef = collection(db, 'users', userId, 'cart');
-      const cartSnapshot = await getDocs(cartRef);
+      const userId = firestoreService.userId;
+      if(userId) {
+        const cartRef = collection(db, 'users', userId, 'cart');
+        const cartSnapshot = await getDocs(cartRef);
+        const deletePromises = cartSnapshot.docs.map(doc => deleteDoc(doc.ref));
 
-      const deletePromises = cartSnapshot.docs.map(doc => deleteDoc(doc.ref));
+        await Promise.all(deletePromises);
+      }
 
-      await Promise.all(deletePromises);
+      
     } catch (error) {
       throw error;
     }
