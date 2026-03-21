@@ -1,0 +1,44 @@
+import React, {  useState } from "react";
+import { Box } from "@mui/material";
+import { AdminTabs } from "../../domains/admin/components/admin-tabs/AdminTabs";
+import { TabPanel } from "../../domains/admin/components/tab-panel/TabPanel";
+import { TableProgressOrders } from "../../domains/admin/components/table/TableProgressOrders";
+import { TableDoneOrders } from "../../domains/admin/components/table/Done/TableDoneOrders";
+import { AddNewGoodForm } from "../../domains/admin/components/add-new-good-form/AddNewGoodForm";
+
+
+export const Admin = () => {
+    const [tabIndex, setTabIndex] = useState<number>(0);
+
+    const handleChangeTab = (event: React.SyntheticEvent, index: number) => {
+        setTabIndex(index);
+    };
+
+    
+
+    return (
+        <Box
+            sx={{
+                bgcolor: 'background.paper',
+                display: 'flex',
+                height: "100%"
+            }}
+        >
+            <AdminTabs 
+                tabIndex={tabIndex} 
+                onTabChange={handleChangeTab} 
+            />
+            <Box sx={{width: "100%", overflowY:'scroll'}}>
+                <TabPanel value={tabIndex} index={0}>
+                    <TableProgressOrders/>     
+                </TabPanel>
+                <TabPanel value={tabIndex} index={1}>
+                    <TableDoneOrders/>
+                </TabPanel>
+                <TabPanel value={tabIndex} index={2}>
+                    <AddNewGoodForm/>
+                </TabPanel>
+            </Box>
+        </Box>
+    );
+};

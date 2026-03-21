@@ -18,6 +18,7 @@ class CartService {
         await setDoc(doc(userOrdersRef, docId), addNewDoc);
       }
     } catch (error) {
+      console.error('Error add to cart:', error);
       throw error;
     }
   }
@@ -30,6 +31,7 @@ class CartService {
         await deleteDoc(cartItemRef);
       }
     } catch (error) {
+      console.error('Error remove from cart:', error);
       throw error;
     }
   }
@@ -42,6 +44,7 @@ class CartService {
         await updateDoc(itemRef, updatedData);
       }
     } catch (error) {
+      console.error('Error cart item:', error);
       throw error;
     }
   }
@@ -54,33 +57,39 @@ class CartService {
         await updateDoc(itemRef, { quantity });
       }
     } catch (error) {
+      console.error('Error update cart item quantity:', error);
       throw error;
     }
   }
 
   async getUserCart(): Promise<CartItem[]> {
-    const uid = firestoreService.userId;
-    if (uid) {
-      const cartRef = collection(db, 'users', uid, 'cart');
-      const cartSnapshot = await getDocs(cartRef);
+    try {
+      const uid = firestoreService.userId;
+      if (uid) {
+        const cartRef = collection(db, 'users', uid, 'cart');
+        const cartSnapshot = await getDocs(cartRef);
 
-      const rawData = cartSnapshot.docs.map<CartItem>(doc => doc.data() as CartItem);
+        const rawData = cartSnapshot.docs.map<CartItem>(doc => doc.data() as CartItem);
 
-      return rawData.reduce<CartItem[]>((acc, curr) => {
-        const pizzaId = `${curr.name}.${curr.settings?.size ?? ''}.${curr.settings?.size ?? ''}`;
+        return rawData.reduce<CartItem[]>((acc, curr) => {
+          const pizzaId = `${curr.name}.${curr.settings?.size ?? ''}.${curr.settings?.dough ?? ''}`;
 
-        const existingItem = acc.find(item => item.pizzaId === pizzaId);
-        if (existingItem) {
-          existingItem.quantity += curr.quantity;
-        } else {
-          acc.push({ ...curr, pizzaId });
-        }
+          const existingItem = acc.find(item => item.pizzaId === pizzaId);
+          if (existingItem) {
+            existingItem.quantity += curr.quantity;
+          } else {
+            acc.push({ ...curr, pizzaId });
+          }
 
-        return acc;
-      }, []);
+          return acc;
+        }, []);
+      }
+      
+      return [];
+    } catch (error) {
+      console.error('Error get user cart:', error);
+      return [];
     }
-
-    return [];
   }
 
   async clearCart(): Promise<void> {
@@ -96,7 +105,7 @@ class CartService {
 
       
     } catch (error) {
-      throw error;
+      console.error('Error clear cart:', error);
     }
   }
 }

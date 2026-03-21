@@ -54,6 +54,7 @@ const DIALOG_SIZES = {
 
 export const ModalGood = ({ open, handleClose, data }: ModalGoodInterface) => {
   const addToCart = useCartStore(state => state.addToCart);
+  const isLoading = useCartStore(state => state.isLoading);
   const uid = useAuthStore(state => state.user?.uid);
 
   const {
@@ -78,7 +79,6 @@ export const ModalGood = ({ open, handleClose, data }: ModalGoodInterface) => {
 
   const onSubmit = useCallback(
     async (formValues: FormValues) => {
-      console.log(data);
       const sizeIndex = (data?.sizes ?? []).findIndex(size => size === formValues.size);
       const size = (data?.sizes ?? [])[sizeIndex];
 
@@ -261,6 +261,7 @@ export const ModalGood = ({ open, handleClose, data }: ModalGoodInterface) => {
                     height: '60%',
                     fontWeight: 'bold',
                   }}
+                  disabled={isLoading}
                   color='warning'
                   variant='contained'>
                   В корзину за {currentPrice()} ₽

@@ -2,7 +2,6 @@ import { create } from 'zustand';
 import type { CartItem, CartState, Pizza, UpdateQuantityPayload } from '../types/cart.types';
 import { combine, devtools, persist } from 'zustand/middleware';
 import { cartService } from '../services/cartService';
-import { firestoreService } from '../../../shared/services/firestoreService';
 
 interface CartStore extends CartState {
   addToCart: (item: CartItem) => Promise<void>;
@@ -55,10 +54,14 @@ export const useCartStore = create<CartStore>()(
         return {
           loadUserCart,
           addToCart: async newItem => {
-            set({ isLoading: true });
-            await cartService.addToCart(newItem);
-            set({ isLoading: false });
-            void loadUserCart();
+            try{
+              set({ isLoading: true });
+              await cartService.addToCart(newItem);
+              set({ isLoading: false });
+              void loadUserCart();
+            } catch (e) {
+              set({error: e instanceof Error ? e.message : 'Failed to remove item from cart', isLoading: false });
+            }
           },
 
           removeFromCart: async (id, settings) => {

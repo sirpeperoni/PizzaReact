@@ -1,5 +1,5 @@
 import { Paper } from '@mui/material';
-import type { HistoryOrder } from '../../../../shared/types/historyOrder';
+import type { HistoryOrder } from '../../../../../shared/types/historyOrder';
 import { OrderHeader } from '../order-header/OrderHeader';
 import { OrderItemsList } from '../order-items-list/OrderItemsList';
 import { OrderTotal } from '../order-total/OrderTotal';
@@ -25,7 +25,7 @@ export const OrderCard = ({ order }: OrderCardProps) => {
                 }
             }}
         >
-            <OrderHeader date={order.orderData} itemsCount={order.items.length} />
+            <OrderHeader date={order.orderDate} itemsCount={order.items.length} />
             <OrderItemsList items={order.items} />
             <OrderTotal totalPrice={order.totalPrice} />
             <OrderStatus status={order.status} />

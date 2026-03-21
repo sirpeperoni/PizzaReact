@@ -4,9 +4,6 @@ import {  db } from "../../../shared/firebase";
 import { firestoreService } from "../../../shared/services/firestoreService";
 
 class ProfileService {
-    sleep(ms: number) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
     async fetchHistory(): Promise<HistoryOrder[]> {
         const uid = firestoreService.userId
         try {

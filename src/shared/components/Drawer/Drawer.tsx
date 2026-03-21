@@ -223,7 +223,7 @@ export const CartDrawer = ({ open, onClose }: CartDrawerProps) => {
                             {`${item.settings?.size},`}
                           </Typography>
                           <Typography variant='subtitle1' sx={{ fontWeight: 'medium' }}>
-                            {item.settings?.dough === 'tradition' ? 'традиционное тесто' : 'тонкое тесто'}
+                            {item.settings?.dough === 'Традиционное' ? 'традиционное тесто' : 'тонкое тесто'}
                           </Typography>
                         </Box>
                         <Box component='span' sx={{ display: 'flex', gap: 2, mt: 0.5 }}>

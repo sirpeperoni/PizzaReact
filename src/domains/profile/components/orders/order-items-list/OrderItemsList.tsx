@@ -1,5 +1,5 @@
 import { Box } from '@mui/material';
-import type { CartItem } from '../../../cart/types/cart.types';
+import type { CartItem } from '../../../../cart/types/cart.types';
 import { OrderItem } from '../order-item/OrderItem';
 
 

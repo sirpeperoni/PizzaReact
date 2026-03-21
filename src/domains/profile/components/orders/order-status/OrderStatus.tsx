@@ -1,5 +1,5 @@
 import { Box, Typography, Divider } from '@mui/material';
-import type { OrderStatus as OrderStatusType } from '../../types/types';
+import type { OrderStatus as OrderStatusType } from '../../../types/types';
 
 interface OrderStatusProps {
     status: OrderStatusType;

@@ -152,7 +152,7 @@ export const GoodsList = memo(({ goodName }: GoodsListProps) => {
           justifyContent: 'center',
         }}>
         {pizza.goods.map(item => (
-          <Grid key={item.id}>
+          <Grid key={item.id} container>
             <GoodItem {...item} onOpenModal={handleOpenModal} onCloseModal={handleCloseModal} />
           </Grid>
         ))}

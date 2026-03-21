@@ -1,6 +1,6 @@
 import { Box, Typography } from '@mui/material';
-import type { CartItem } from '../../../cart/types/cart.types';
-import { ImageWithDimensionsIndicated } from '../../../../shared/utils/image';
+import type { CartItem } from '../../../../cart/types/cart.types';
+import { ImageWithDimensionsIndicated } from '../../../../../shared/utils/image';
 
 
 interface OrderItemProps {
@@ -49,7 +49,7 @@ export const OrderItem = ({ pizza }: OrderItemProps) => {
                         maxWidth: "100%"
                     }}
                 >
-                    {pizza.name || "Пицца"}
+                    {`${pizza.name || "Пицца"} (${pizza.quantity })`}
                 </Typography>                
                 <Typography 
                     component="p" 

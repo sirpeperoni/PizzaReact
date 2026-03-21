@@ -1,5 +1,5 @@
 import { Typography, Divider, Box } from '@mui/material';
-import { formatDate } from '../../../../shared/utils/numberToDate';
+import { formatDate } from '../../../../../shared/utils/numberToDate';
 
 
 interface OrderHeaderProps {

@@ -1,15 +1,19 @@
-import { addDoc, collection, getDocs } from 'firebase/firestore';
+import { addDoc, collection, getDocs, updateDoc } from 'firebase/firestore';
 import type { CartItem, GoodItemInterface } from '../types/pizza.types';
 import { db } from '../../../shared/firebase';
 import type { HistoryOrder } from '../../../shared/types/historyOrder';
 
 class PizzaService {
   async fetchGoods(collectionName: string): Promise<GoodItemInterface[]> {
-    const querySnapshot = await getDocs(collection(db, collectionName));
-    return querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-    })) as GoodItemInterface[];
+    try {
+      const querySnapshot = await getDocs(collection(db, collectionName));
+      return querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as GoodItemInterface[];
+    } catch (error) {
+      return []
+    }
   }
 
   async placeAnOrder(userId: string, cartItems: CartItem[], totalPrice: number): Promise<void> {
@@ -19,10 +23,14 @@ class PizzaService {
         uid: userId,
         items: cartItems,
         totalPrice: totalPrice,
-        orderData: Date.now(),
+        orderDate: Date.now(),
         status: "cooking"
       };
-      await addDoc(userOrdersRef, order);
+
+      const docRef = await addDoc(userOrdersRef, order);
+      const orderId = docRef.id;
+      
+      await updateDoc(docRef, { id: orderId });
     } catch (error) {}
   }
 }

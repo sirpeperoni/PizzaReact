@@ -1,5 +1,5 @@
 import { Box, Typography } from "@mui/material"
-import type { HistoryOrder } from "../../../../shared/types/historyOrder"
+import type { HistoryOrder } from "../../../../../shared/types/historyOrder"
 import { OrderCard } from "../order-card/OrderCard"
 
 interface ProgressOrdersProps {
@@ -14,13 +14,12 @@ export const ProgressOrders = ({inProgressOrders}: ProgressOrdersProps) => {
                 В процессе: ({inProgressOrders.length})
             </Typography>
             <Box sx={{ 
-                display: "flex", 
-                justifyContent: "space-between", 
-                flexWrap: "wrap",
-                gap: "20px"
+                display: "grid", 
+                gridTemplateColumns: "repeat(3, 33.3%)",
+                gridRowGap: "30px"
             }}>
                 {inProgressOrders.map((order: HistoryOrder) => (
-                    <OrderCard order={order} key={order.orderData}/>
+                    <OrderCard order={order} key={order.orderDate}/>
                 ))}
             </Box>
         </Box>

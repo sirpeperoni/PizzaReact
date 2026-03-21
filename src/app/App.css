@@ -4,6 +4,16 @@
   box-sizing: border-box;
 }
 
+html, body {
+  height: 100%;
+}
+
+#root{
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
 .center {
   display: flex;
   align-items: center;
