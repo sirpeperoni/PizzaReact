@@ -19,8 +19,8 @@ function App() {
     };
   }, [initAuth]);
 
-  if(isLoading){
-    return <Loading/>
+  if (isLoading) {
+    return <Loading />;
   }
 
   return (

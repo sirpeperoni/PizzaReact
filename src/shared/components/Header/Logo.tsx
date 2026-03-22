@@ -12,18 +12,15 @@ export const Logo = ({ variant }: LogoProps) => {
   return (
     <Box
       sx={{
-        display: "flex",
-        alignItems: "center",
+        display: 'flex',
+        alignItems: 'center',
         ...(variant === 'mobile' && {
           position: 'absolute',
           left: '50%',
           transform: 'translateX(-50%)',
         }),
       }}
-      onClick={
-        () => router.navigate({ to: '/home' })
-      }
-    >
+      onClick={() => router.navigate({ to: '/home' })}>
       <LocalPizzaIcon
         sx={{
           display: {
@@ -50,7 +47,7 @@ export const Logo = ({ variant }: LogoProps) => {
           letterSpacing: '.3rem',
           color: 'inherit',
           textDecoration: 'none',
-      }}>
+        }}>
         PIZZA
       </Typography>
     </Box>

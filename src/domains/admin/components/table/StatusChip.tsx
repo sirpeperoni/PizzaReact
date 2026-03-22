@@ -1,26 +1,17 @@
-import { Chip, CircularProgress } from "@mui/material";
-import { statusConfig, type ChipColor, type OrderStatus } from "../../types/types";
-
+import { Chip, CircularProgress } from '@mui/material';
+import { type ChipColor, type OrderStatus, statusConfig } from '../../types/types';
 
 interface StatusChipProps {
-    status: OrderStatus;
-    isUpdating: boolean;
+  status: OrderStatus;
+  isUpdating: boolean;
 }
 
 export const StatusChip = ({ status, isUpdating }: StatusChipProps) => {
-    const config = statusConfig[status];
+  const config = statusConfig[status];
 
-    if (isUpdating) {
-        return <CircularProgress size={24} />;
-    }
+  if (isUpdating) {
+    return <CircularProgress size={24} />;
+  }
 
-
-    return (
-        <Chip
-            label={config.label}
-            color={config.color as ChipColor}
-            size="small"
-            sx={{ fontWeight: 'medium' }}
-        />
-    );
+  return <Chip label={config.label} color={config.color as ChipColor} size='small' sx={{ fontWeight: 'medium' }} />;
 };

@@ -3,7 +3,6 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useCallback } from 'react';
 import { useCartStore } from '../../cart/stores/cartStore';
 import type { CartItem, GoodItemInterface } from '../types/pizza.types';
-import { ImageWithDimensionsIndicated } from '../../../shared/utils/image';
 import { useAuthStore } from '../../auth/stores/authStore';
 import { Controller, useForm } from 'react-hook-form';
 
@@ -144,16 +143,7 @@ export const ModalGood = ({ open, handleClose, data }: ModalGoodInterface) => {
           </IconButton>
 
           <Box sx={{ flexShrink: 0, mr: 3 }}>
-            <img
-              width={IMAGE_DIMENSIONS.width}
-              src={ImageWithDimensionsIndicated({
-                r: IMAGE_DIMENSIONS.height,
-                x: IMAGE_DIMENSIONS.width,
-                id: data?.img,
-              })}
-              alt={data?.title}
-              style={{ display: 'block' }}
-            />
+            <img width={IMAGE_DIMENSIONS.width} src={data?.img} alt={data?.title} style={{ display: 'block' }} />
           </Box>
 
           <Box

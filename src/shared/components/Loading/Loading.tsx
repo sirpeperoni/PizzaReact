@@ -1,10 +1,10 @@
-import { Box, CircularProgress } from "@mui/material";
+import { Box, CircularProgress } from '@mui/material';
 
-interface LoadingProps{
-    height?: string
+interface LoadingProps {
+  height?: string;
 }
 
-export const Loading = ({ height = '90vh'}: LoadingProps) => {
+export const Loading = ({ height = '90vh' }: LoadingProps) => {
   return (
     <Box
       sx={{
@@ -13,7 +13,7 @@ export const Loading = ({ height = '90vh'}: LoadingProps) => {
         justifyContent: 'center',
         height: height,
       }}>
-          <CircularProgress size={24} color='inherit' />
+      <CircularProgress size={24} color='inherit' />
     </Box>
   );
-}
+};

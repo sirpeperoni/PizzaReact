@@ -54,13 +54,13 @@ export const useCartStore = create<CartStore>()(
         return {
           loadUserCart,
           addToCart: async newItem => {
-            try{
+            try {
               set({ isLoading: true });
               await cartService.addToCart(newItem);
               set({ isLoading: false });
               void loadUserCart();
             } catch (e) {
-              set({error: e instanceof Error ? e.message : 'Failed to remove item from cart', isLoading: false });
+              set({ error: e instanceof Error ? e.message : 'Failed to remove item from cart', isLoading: false });
             }
           },
 

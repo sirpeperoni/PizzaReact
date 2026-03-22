@@ -6,5 +6,5 @@ export const Route = createFileRoute('/_authenticated/_admin/admin')({
 });
 
 function RouteComponent() {
-  return <Admin/>;
+  return <Admin />;
 }

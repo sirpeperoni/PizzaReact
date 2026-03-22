@@ -12,7 +12,7 @@ class PizzaService {
         ...doc.data(),
       })) as GoodItemInterface[];
     } catch (error) {
-      return []
+      return [];
     }
   }
 
@@ -24,12 +24,12 @@ class PizzaService {
         items: cartItems,
         totalPrice: totalPrice,
         orderDate: Date.now(),
-        status: "cooking"
+        status: 'cooking',
       };
 
       const docRef = await addDoc(userOrdersRef, order);
       const orderId = docRef.id;
-      
+
       await updateDoc(docRef, { id: orderId });
     } catch (error) {}
   }

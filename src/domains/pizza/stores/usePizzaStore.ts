@@ -57,7 +57,7 @@ export const usePizzaStore = create<PizzaStore>()(
             const currentItem = state.goods.find(item => item.id === id);
             return { currentItem };
           });
-        }
+        },
       }),
       {
         name: 'pizza-storage',

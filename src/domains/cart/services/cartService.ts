@@ -26,7 +26,7 @@ class CartService {
   async removeFromCart(item: CartItem): Promise<void> {
     try {
       const userId = firestoreService.userId;
-      if(userId){
+      if (userId) {
         const cartItemRef = doc(db, 'users', userId, 'cart', item.id);
         await deleteDoc(cartItemRef);
       }
@@ -39,7 +39,7 @@ class CartService {
   async updateCartItem(itemId: string, updatedData: Partial<CartItem>): Promise<void> {
     try {
       const userId = firestoreService.userId;
-      if(userId) {
+      if (userId) {
         const itemRef = doc(db, 'users', userId, 'cart', itemId);
         await updateDoc(itemRef, updatedData);
       }
@@ -52,7 +52,7 @@ class CartService {
   async updateCartItemQuantity(itemId: string, quantity: number): Promise<void> {
     try {
       const userId = firestoreService.userId;
-      if(userId) {
+      if (userId) {
         const itemRef = doc(db, 'users', userId, 'cart', itemId);
         await updateDoc(itemRef, { quantity });
       }
@@ -84,7 +84,7 @@ class CartService {
           return acc;
         }, []);
       }
-      
+
       return [];
     } catch (error) {
       console.error('Error get user cart:', error);
@@ -95,15 +95,13 @@ class CartService {
   async clearCart(): Promise<void> {
     try {
       const userId = firestoreService.userId;
-      if(userId) {
+      if (userId) {
         const cartRef = collection(db, 'users', userId, 'cart');
         const cartSnapshot = await getDocs(cartRef);
         const deletePromises = cartSnapshot.docs.map(doc => deleteDoc(doc.ref));
 
         await Promise.all(deletePromises);
       }
-
-      
     } catch (error) {
       console.error('Error clear cart:', error);
     }

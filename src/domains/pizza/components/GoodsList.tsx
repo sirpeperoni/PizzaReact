@@ -57,7 +57,7 @@ const GoodItem = memo(({ id, title, content, price, img, onOpenModal }: GoodItem
           height: '100%',
         }}>
         <CardActionArea onClick={handleOpen}>
-          <CardMedia component='img' image={imageUrl} alt={title} />
+          <CardMedia component='img' image={img} alt={title} />
           <CardContent>
             <Typography variant='h5' sx={{ fontWeight: 'bold' }} gutterBottom>
               {title}
