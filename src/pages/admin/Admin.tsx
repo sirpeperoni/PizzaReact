@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { Box } from '@mui/material';
 import { AdminTabs } from '../../domains/admin/components/admin-tabs/AdminTabs';
 import { TabPanel } from '../../domains/admin/components/tab-panel/TabPanel';
-import { TableProgressOrders } from '../../domains/admin/components/table/TableProgressOrders';
-import { TableDoneOrders } from '../../domains/admin/components/table/Done/TableDoneOrders';
+import { TableProgressOrders } from '../../domains/admin/components/table/progress-table/TableProgressOrders.tsx';
+import { TableDoneOrders } from '../../domains/admin/components/table/done/TableDoneOrders.tsx';
 import { AddNewGoodForm } from '../../domains/admin/components/add-new-good-form/AddNewGoodForm';
 import { useAdminStore } from '../../domains/admin/stores/adminStore.ts';
 

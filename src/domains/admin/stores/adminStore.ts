@@ -20,9 +20,10 @@ interface AdminStore {
   totalProgressOrders: number;
   lastDoc?: QueryDocumentSnapshot<DocumentData>;
   firstDoc?: QueryDocumentSnapshot<DocumentData>;
+  pageCursors: QueryDocumentSnapshot[]; // firstDoc каждой страницы
+  currentPageIndex: number;
 
-  fetchProgressOrders: (direction?: 'next' | 'prev') => Promise<void>;
-  fetchDoneOrders: (direction?: 'next' | 'prev') => Promise<void>;
+  fetchOrders: (operation: WhereFilterOp, direction?: 'next' | 'prev' | 'first', pageSize?: number) => Promise<void>;
   getCollectionCount: (col: string, comparison: WhereFilterOp) => Promise<void>;
   updateOrderStatus: (userId: string, docId: string, status: OrderStatus) => Promise<void>;
   addNewGoodToCategory: (category: string, newGood: GoodItemInterface) => Promise<void>;
@@ -49,15 +50,63 @@ export const useAdminStore = create<AdminStore>()(
             throw err;
           }
         };
-        const fetchProgressOrders = async (direction?: 'next' | 'prev') => {
+        const fetchOrders = async (operation: WhereFilterOp, direction?: 'next' | 'prev' | 'first', pageSize?: number) => {
           try {
             set({ isLoading: true, error: null });
+            
+            let cursor = null;
+            let newPageCursors = [...get().pageCursors];
+            let newCurrentPageIndex = get().currentPageIndex;
+            
+            if (direction === 'next') {
+              cursor = get().lastDoc;
+              newCurrentPageIndex = get().currentPageIndex + 1;
+            } else if (direction === 'prev') {
+              newCurrentPageIndex = get().currentPageIndex - 1;
+
+              cursor = get().pageCursors[newCurrentPageIndex];
+            } else if (direction === 'first') {
+              newCurrentPageIndex = 0;
+              newPageCursors = [];
+              cursor = null;
+            }
+            
             const { orders, lastDoc, firstDoc, totalCount } = await adminService.fetchOrders(
-              '!=',
-              direction === 'next' ? get().lastDoc : get().firstDoc,
+              operation,
+              get().currentPageIndex,
+              cursor,
               direction,
+              get().pageCursors,
+              pageSize,
             );
-            set({ progressOrders: orders, isLoading: false, lastDoc, firstDoc, totalProgressOrders: totalCount });
+
+            if (direction === 'next' && firstDoc) {
+              newPageCursors[newCurrentPageIndex] = firstDoc;
+            }
+            if(operation === '!=') {
+              set({ 
+                progressOrders: orders, 
+                isLoading: false, 
+                lastDoc, 
+                firstDoc, 
+                totalProgressOrders: totalCount,
+                pageCursors: newPageCursors,
+                currentPageIndex: newCurrentPageIndex
+              });
+            }
+
+            if(operation === '==') {
+              set({ 
+                doneOrders: orders, 
+                isLoading: false, 
+                lastDoc, 
+                firstDoc, 
+                totalDoneOrders: totalCount,
+                pageCursors: newPageCursors,
+                currentPageIndex: newCurrentPageIndex
+              });
+            }
+            
           } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Failed to fetch orders';
             set({ error: errorMessage, isLoading: false });
@@ -79,14 +128,16 @@ export const useAdminStore = create<AdminStore>()(
           doneOrders: [],
           totalDoneOrders: 0,
           totalProgressOrders: 0,
-          fetchProgressOrders,
+          fetchOrders,
           getCollectionCount,
           resetDocs,
+          pageCursors: [],
+          currentPageIndex: 0,
           updateOrderStatus: async (userId, docId, status) => {
             try {
               set({ isLoading: true, error: null });
               await adminService.updateOrderStatus(userId, docId, status);
-              await fetchProgressOrders();
+              await fetchOrders('!=');
               set({ isLoading: false });
             } catch (err) {
               const errorMessage = err instanceof Error ? err.message : 'Failed to update status';
@@ -104,24 +155,7 @@ export const useAdminStore = create<AdminStore>()(
               set({ error: errorMessage, isLoading: false });
               throw err;
             }
-          },
-          fetchDoneOrders: async (direction?: 'next' | 'prev') => {
-            try {
-              set({ isLoading: true, error: null });
-              // await getCollectionCount('orders', '==');
-              // const orders = await adminService.fetchDoneOrders();
-              const { orders, lastDoc, firstDoc, totalCount } = await adminService.fetchOrders(
-                '==',
-                direction === 'next' ? get().lastDoc : get().firstDoc,
-                direction,
-              );
-              set({ doneOrders: orders, isLoading: false, lastDoc, firstDoc, totalDoneOrders: totalCount });
-            } catch (err) {
-              const errorMessage = err instanceof Error ? err.message : 'Failed to fetch orders';
-              set({ error: errorMessage, isLoading: false });
-              throw err;
-            }
-          },
+          }
         };
       },
       { name: 'auth-store' },

@@ -15,6 +15,7 @@ import {
   type WhereFilterOp,
   type QueryDocumentSnapshot,
   type DocumentData,
+  startAt,
 } from 'firebase/firestore';
 import { db } from '../../../shared/firebase';
 import type { HistoryOrder } from '../../../shared/types/historyOrder';
@@ -23,8 +24,11 @@ import type { OrderStatus } from '../../profile/types/types';
 class AdminService {
   fetchOrders = async (
     operation: WhereFilterOp,
-    cursor?: QueryDocumentSnapshot<DocumentData>,
-    direction?: 'next' | 'prev',
+    currentPageIndex: number,
+    cursor?: QueryDocumentSnapshot<DocumentData> | null,
+    direction?: 'next' | 'prev' | 'first',
+    pageCursors?: QueryDocumentSnapshot<DocumentData>[], 
+    pageSize: number = 10
   ): Promise<{
     orders: HistoryOrder[];
     firstDoc?: QueryDocumentSnapshot<DocumentData>;
@@ -32,21 +36,37 @@ class AdminService {
     totalCount?: number;
   }> => {
     try {
-      const baseQuery = [collectionGroup(db, 'orders'), where('status', operation, 'delivered'), orderBy('status')] as const;
+      const baseQuery = [collectionGroup(db, 'orders'), where('status', operation, 'delivered'), orderBy('orderDate', 'desc')] as const;
 
-      const ordersQuery = direction
-        ? direction === 'next'
-          ? query(...baseQuery, startAfter(cursor), limit(10))
-          : query(...baseQuery, endBefore(cursor), limit(10))
-        : query(...baseQuery, limit(10));
+      const getOrdersQuery = () => {
+        switch (direction) {
+          case 'first':
+            return query(...baseQuery, limit(pageSize));
+          case 'next':
+            return query(...baseQuery, startAfter(cursor), limit(pageSize));
+          case 'prev':{
+            if (pageCursors && currentPageIndex !== undefined && currentPageIndex > 1) {
+              const currentPageFirstDoc = pageCursors[currentPageIndex];
+              const previousPageFirstDoc = pageCursors[currentPageIndex - 1];
+              return query(...baseQuery, endBefore(currentPageFirstDoc), startAt(previousPageFirstDoc), limit(pageSize));
+            }
+            return query(...baseQuery, limit(pageSize));
+          }
+          default:
+            return query(...baseQuery, limit(pageSize));
+        }
+      };
+      
+      const ordersQuery = getOrdersQuery();
 
       const querySnapshot = await getDocs(ordersQuery);
       const totalCount = await this.getCollectionCount('orders', operation);
 
-      const orders = querySnapshot.docs.map(doc => doc.data() as HistoryOrder);
+      let orders = querySnapshot.docs.map(doc => doc.data() as HistoryOrder);
+
+      console.log(orders)
       const firstDoc = querySnapshot.docs[0];
       const lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
-
       return { orders, firstDoc, lastDoc, totalCount };
     } catch (error) {
       console.error('Error fetch progress orders:', error);
@@ -54,22 +74,7 @@ class AdminService {
     }
   };
 
-  // fetchDoneOrders = async (): Promise<HistoryOrder[]> => {
-  //   try {
-  //     const ordersQuery = query(collectionGroup(db, 'orders'), where('status', '==', 'delivered'), orderBy('status'));
-  //
-  //     const querySnapshot = await getDocs(ordersQuery);
-  //
-  //     const newOrders = querySnapshot.docs.map(doc => {
-  //       const data = doc.data();
-  //       return data as HistoryOrder;
-  //     });
-  //     return newOrders;
-  //   } catch (error) {
-  //     console.error('Error fetch progress orders:', error);
-  //     return [];
-  //   }
-  // };
+
 
   getCollectionCount = async (collectionName: string, comparison: WhereFilterOp) => {
     const ordersQuery = query(collectionGroup(db, collectionName), where('status', comparison, 'delivered'));
