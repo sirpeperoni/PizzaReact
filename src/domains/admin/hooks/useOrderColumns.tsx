@@ -1,4 +1,3 @@
-// hooks/useOrderColumns.ts
 import { useMemo } from 'react';
 import type { GridColDef } from '@mui/x-data-grid';
 import type { OrderStatus } from '../types/types';

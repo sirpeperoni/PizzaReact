@@ -1,4 +1,3 @@
-// TableProgressOrders.tsx
 import { useState } from 'react';
 import { useAdminStore } from '../../../stores/adminStore.ts';
 import type { OrderStatus } from '../../../types/types.ts';
