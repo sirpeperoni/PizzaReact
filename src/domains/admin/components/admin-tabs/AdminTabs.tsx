@@ -25,6 +25,7 @@ export const AdminTabs = ({ tabIndex, onTabChange }: AdminTabsProps) => {
         <Tab sx={{ borderBottom: '1px solid black' }} label='Подтверждение заказов' {...a11yProps(0)} />
         <Tab sx={{ borderBottom: '1px solid black' }} label='Выполненные заказы' {...a11yProps(1)} />
         <Tab sx={{ borderBottom: '1px solid black' }} label='Добавить новый товар' {...a11yProps(2)} />
+        <Tab sx={{ borderBottom: '1px solid black' }} label='Чат с пользователями' {...a11yProps(3)} />
       </Tabs>
     </Box>
   );

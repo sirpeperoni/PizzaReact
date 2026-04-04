@@ -6,6 +6,7 @@ import { TableProgressOrders } from '../../domains/admin/components/table/progre
 import { TableDoneOrders } from '../../domains/admin/components/table/done/TableDoneOrders.tsx';
 import { AddNewGoodForm } from '../../domains/admin/components/add-new-good-form/AddNewGoodForm';
 import { useAdminStore } from '../../domains/admin/stores/adminStore.ts';
+import { AdminChatPanel } from '../../domains/chat/components/admin-chat/AdminChatPanel';
 
 export const Admin = () => {
   const [tabIndex, setTabIndex] = useState<number>(0);
@@ -33,6 +34,9 @@ export const Admin = () => {
         </TabPanel>
         <TabPanel value={tabIndex} index={2}>
           <AddNewGoodForm />
+        </TabPanel>
+        <TabPanel value={tabIndex} index={3}>
+          <AdminChatPanel />
         </TabPanel>
       </Box>
     </Box>

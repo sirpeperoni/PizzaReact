@@ -134,7 +134,7 @@ export const CartDrawer = ({ open, onClose }: CartDrawerProps) => {
 
       <Divider />
 
-      {isLoading && items.length === 0 && <Loading height='100vh' />}
+      {isLoading && <Loading height='100vh' />}
 
       {error && (
         <Alert severity='error' sx={{ mt: 2 }} onClose={handleRefreshCart}>

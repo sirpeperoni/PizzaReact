@@ -6,28 +6,16 @@ import { auth } from '../../firebase';
 
 interface ProfileProps {
   anchorEl: HTMLElement | null;
+  firebaseRole: string | null;
   onOpen: (event: React.MouseEvent<HTMLElement>) => void;
   onClose: () => void;
 }
 
-export const ProfileIcon = ({ anchorEl, onOpen, onClose }: ProfileProps) => {
-  const [firebaseRole, setFirebaseRole] = useState<string | null>(null);
+export const ProfileIcon = ({ anchorEl, onOpen, onClose, firebaseRole }: ProfileProps) => {
   const user = useAuthStore(state => state.user);
   const router = useRouter();
   const logout = useAuthStore(state => state.logout);
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(async user => {
-      if (user) {
-        const idTokenResult = await user.getIdTokenResult();
-        const role = idTokenResult.claims.role as string;
-        setFirebaseRole(role || null);
-      } else {
-        setFirebaseRole(null);
-      }
-    });
 
-    return () => unsubscribe();
-  }, []);
 
   const getSettings = () => {
     const baseSettings = ['Профиль'];
