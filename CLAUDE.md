@@ -33,6 +33,7 @@ Code is organized by business domains under `src/domains/`, each self-contained 
 - `cart/` — cart state synced to `users/{uid}/cart` subcollection
 - `profile/` — user info and order history from `users/{uid}/orders` subcollection
 - `admin/` — order management with cursor-based pagination, add new pizzas
+- `chat/` — support ticket system between users and admins (see Chat System below)
 
 `src/pages/` contains thin wrappers that compose domain components.  
 `src/shared/` contains the Header, Drawer, Firebase init (`firebase.ts`), and utility functions.
@@ -72,6 +73,13 @@ pizza/{pizzaId}           — GoodItemInterface (title, content, price[], sizes[
 
 Order statuses: `'cooking'` → `'ready'` → `'in_delivery'` → `'delivered'`
 
+```
+chats/{chatId}            — Chat (userId, username, userEmail, subject, status, createdAt, lastMessage, lastMessageAt, unreadByAdmin, unreadByUser)
+  messages/{messageId}   — ChatMessage (text, senderId, senderRole, createdAt)
+```
+
+Chat statuses: `'open'` → `'closed'` (admin closes the ticket)
+
 ### Cart Deduplication
 
 Cart items are grouped by a derived key:
@@ -83,6 +91,29 @@ Same pizza + same size + same dough merges into one cart entry.
 ### Admin Pagination
 
 Uses **cursor-based pagination** (`startAfter` / `endBefore`) — not offset-based. The admin store maintains an array of page cursors for bidirectional navigation.
+
+### Chat System
+
+Support tickets live in `src/domains/chat/`. Structure mirrors other domains:
+
+- `types/chat.types.ts` — `Chat`, `ChatMessage`, `ChatState`
+- `services/chatService.ts` — Firestore operations (singleton `chatService`)
+- `stores/chatStore.ts` — Zustand store (`useChatStore`), **no persist**
+- `hooks/useUserChat.ts` — custom hook encapsulating user-side effects
+- `components/user-chat/UserChatDrawer.tsx` — Drawer for users (list / new / chat views)
+- `components/admin-chat/AdminChatPanel.tsx` — admin panel (left: open chats list, right: messages)
+- `components/admin-chat/ChatList.tsx` — left sidebar component (reused in admin panel)
+- `components/admin-chat/ChatMessageThread.tsx` — messages + input + close button
+- `components/shared/MessageBubble.tsx` — shared message bubble (used by both user and admin)
+- `components/shared/ChatInput.tsx` — shared text input with send button (owns its own `text` state)
+
+**User flow**: chat icon in Header (hidden for admins) → Drawer with ticket list → "Новый запрос" creates a ticket with a subject → messages in selected ticket.
+
+**Admin flow**: "Чат с пользователями" tab in admin panel → sees only `status: 'open'` chats → can reply and close tickets. Closed tickets disappear from the list immediately.
+
+**Real-time**: all lists and message threads use `onSnapshot` listeners. Unread badge in Header is driven by `subscribeUserChats` started in `Header.tsx` on mount.
+
+**chatId** is auto-generated (not userId) — each user can have multiple tickets.
 
 ### User Roles
 
