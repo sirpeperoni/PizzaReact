@@ -1,5 +1,6 @@
-import { AppBar, Container, Toolbar } from '@mui/material';
+import { AppBar, Button, Container, Toolbar } from '@mui/material';
 import { useState, useEffect } from 'react';
+import { Link } from '@tanstack/react-router';
 import { ProfileIcon } from './ProfileIcon';
 import { Logo } from './Logo';
 import { MobileMenu } from './MobileMenu';
@@ -94,6 +95,10 @@ export const Header = () => {
             <DesktopMenu pages={pages} onClick={handleCloseNavMenu} />
 
             <ProfileIcon anchorEl={anchorElUser} onOpen={handleOpenUserMenu} onClose={handleCloseUserMenu} firebaseRole={firebaseRole} />
+
+            <Button component={Link} to='/configurator' sx={{ ml: 1, fontWeight: 'bold', display: { xs: 'none', md: 'block' } }}>
+              Make your own pizza
+            </Button>
 
             {!isAdmin && <ChatButton onClick={handleChatClick} />}
 

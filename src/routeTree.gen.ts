@@ -16,6 +16,7 @@ import { Route as NotauthenticatedRegisterRouteImport } from './app/routes/_nota
 import { Route as NotauthenticatedLoginRouteImport } from './app/routes/_notauthenticated/login'
 import { Route as AuthenticatedProfileRouteImport } from './app/routes/_authenticated/profile'
 import { Route as AuthenticatedHomeRouteImport } from './app/routes/_authenticated/home'
+import { Route as AuthenticatedConfiguratorRouteImport } from './app/routes/_authenticated/configurator'
 import { Route as AuthenticatedAdminRouteRouteImport } from './app/routes/_authenticated/_admin/route'
 import { Route as AuthenticatedAdminAdminRouteImport } from './app/routes/_authenticated/_admin/admin'
 
@@ -53,6 +54,12 @@ const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
   path: '/home',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedConfiguratorRoute =
+  AuthenticatedConfiguratorRouteImport.update({
+    id: '/configurator',
+    path: '/configurator',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminRouteRoute = AuthenticatedAdminRouteRouteImport.update({
   id: '/_admin',
   getParentRoute: () => AuthenticatedRouteRoute,
@@ -65,6 +72,7 @@ const AuthenticatedAdminAdminRoute = AuthenticatedAdminAdminRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/configurator': typeof AuthenticatedConfiguratorRoute
   '/home': typeof AuthenticatedHomeRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/login': typeof NotauthenticatedLoginRoute
@@ -73,6 +81,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/configurator': typeof AuthenticatedConfiguratorRoute
   '/home': typeof AuthenticatedHomeRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/login': typeof NotauthenticatedLoginRoute
@@ -85,6 +94,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/_notauthenticated': typeof NotauthenticatedRouteRouteWithChildren
   '/_authenticated/_admin': typeof AuthenticatedAdminRouteRouteWithChildren
+  '/_authenticated/configurator': typeof AuthenticatedConfiguratorRoute
   '/_authenticated/home': typeof AuthenticatedHomeRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_notauthenticated/login': typeof NotauthenticatedLoginRoute
@@ -93,15 +103,30 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/home' | '/profile' | '/login' | '/register' | '/admin'
+  fullPaths:
+    | '/'
+    | '/configurator'
+    | '/home'
+    | '/profile'
+    | '/login'
+    | '/register'
+    | '/admin'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/home' | '/profile' | '/login' | '/register' | '/admin'
+  to:
+    | '/'
+    | '/configurator'
+    | '/home'
+    | '/profile'
+    | '/login'
+    | '/register'
+    | '/admin'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/_notauthenticated'
     | '/_authenticated/_admin'
+    | '/_authenticated/configurator'
     | '/_authenticated/home'
     | '/_authenticated/profile'
     | '/_notauthenticated/login'
@@ -166,6 +191,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedHomeRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/configurator': {
+      id: '/_authenticated/configurator'
+      path: '/configurator'
+      fullPath: '/configurator'
+      preLoaderRoute: typeof AuthenticatedConfiguratorRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/_admin': {
       id: '/_authenticated/_admin'
       path: ''
@@ -199,12 +231,14 @@ const AuthenticatedAdminRouteRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
+  AuthenticatedConfiguratorRoute: typeof AuthenticatedConfiguratorRoute
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRouteWithChildren,
+  AuthenticatedConfiguratorRoute: AuthenticatedConfiguratorRoute,
   AuthenticatedHomeRoute: AuthenticatedHomeRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
 }
