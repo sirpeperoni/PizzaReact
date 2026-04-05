@@ -34,6 +34,7 @@ Code is organized by business domains under `src/domains/`, each self-contained 
 - `profile/` — user info and order history from `users/{uid}/orders` subcollection
 - `admin/` — order management with cursor-based pagination, add new pizzas
 - `chat/` — support ticket system between users and admins (see Chat System below)
+- `configurator/` — interactive 3D pizza builder (see Configurator below)
 
 `src/pages/` contains thin wrappers that compose domain components.  
 `src/shared/` contains the Header, Drawer, Firebase init (`firebase.ts`), and utility functions.
@@ -114,6 +115,27 @@ Support tickets live in `src/domains/chat/`. Structure mirrors other domains:
 **Real-time**: all lists and message threads use `onSnapshot` listeners. Unread badge in Header is driven by `subscribeUserChats` started in `Header.tsx` on mount.
 
 **chatId** is auto-generated (not userId) — each user can have multiple tickets.
+
+### Configurator
+
+Interactive 3D pizza builder at `/configurator`. Lives in `src/domains/configurator/`. No Firebase — state is entirely local (Zustand, no persist).
+
+- `types/configurator.types.ts` — `DoughVariant`, `SauceVariant`, `PizzaSize`, `IngredientKey`, price constants
+- `stores/configuratorStore.ts` — Zustand store (`useConfiguratorStore`), `create + combine + devtools`, **no persist**
+- `components/PizzaConfigurator.tsx` — layout: 3D canvas (65%) + control panel (35%), column on mobile
+- `components/scene/PizzaScene.tsx` — `<Canvas>` with lights, `OrbitControls` (autoRotate, no pan), `TablePlatform`
+- `components/scene/PizzaModel.tsx` — composes pizza layers; Y-stacking based on dough height + cheese height; whole group scaled by size
+- `components/scene/PizzaBase.tsx` — dough cylinder (thin: h=0.08, traditional: h=0.15)
+- `components/scene/PizzaSauce.tsx` — sauce layer, color by variant
+- `components/scene/PizzaCheese.tsx` — cheese layer, height driven by `cheeseAmount` slider (0–100)
+- `components/scene/ingredients/positioning.ts` — **phyllotaxis** (golden angle) generates 55 evenly-spread positions; distributed round-robin across all 6 ingredient types so each type is scattered across the whole pizza, not clustered
+- `components/scene/ingredients/` — 6 ingredient components (Pepperoni, Mushrooms, Olives, Peppers, Tomatoes, Basil); each animates drop-in via `useFrame` exponential decay on mount
+- `components/ui/ConfiguratorPanel.tsx` — MUI panel with price calculation; price = `BASE_PRICES[dough] × SIZE_MULTIPLIERS[size] + active ingredient prices`
+- `components/ui/` — `DoughSelector`, `SauceSelector`, `CheeseSlider`, `IngredientsGrid`, `SizeSelector`
+
+**3D stack**: React Three Fiber (`@react-three/fiber`) + Drei (`@react-three/drei`) + Three.js. All geometry is procedural — no `.glb`/`.obj` files. R3F JSX intrinsics (`<mesh>`, `<cylinderGeometry>`, etc.) require `/// <reference types="@react-three/fiber" />` in `src/vite-env.d.ts`.
+
+**Animation pattern**: each ingredient component uses `useRef(2.0)` as initial Y-offset, `useFrame` lerps it to `0` via `1 - Math.exp(-8 * delta)` (frame-rate-independent). Group position = `yBase + yOffset`.
 
 ### User Roles
 

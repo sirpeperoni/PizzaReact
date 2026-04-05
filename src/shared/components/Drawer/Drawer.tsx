@@ -200,11 +200,7 @@ export const CartDrawer = ({ open, onClose }: CartDrawerProps) => {
                     <img
                       width={64}
                       height={64}
-                      src={ImageWithDimensionsIndicated({
-                        r: 292,
-                        x: 292,
-                        id: item.image!,
-                      })}
+                      src={item.image!}
                       alt=''
                     />
                   </ListItemIcon>
